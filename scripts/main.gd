@@ -293,6 +293,25 @@ func get_scoreboard_data() -> Dictionary:
 
 func _end_championship(winner_team: String, custom_reason: String = "") -> void:
 	game_ended = true
-	print("[CAMPEONATO] FIM DE PARTIDA! Vencedor: Time %s!" % winner_team.to_upper())
+	match_started = false
+	
+	# 1. Todos devem parar completamente (Jogador e Bots)
+	if player:
+		player.match_active = false
+		player.velocity = Vector3.ZERO
+		
+	if bots_container:
+		for bot in bots_container.get_children():
+			if "match_active" in bot:
+				bot.match_active = false
+				bot.velocity = Vector3.ZERO
+				
+	# 2. Libera o cursor do mouse
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	
+	# 3. Atualiza e exibe o placar detalhado completo
+	_refresh_hud_scoreboard()
+	
+	print("[CAMPEONATO] FIM DE PARTIDA! Vencedor: Time %s! %s" % [winner_team.to_upper(), custom_reason])
 	if hud:
 		hud.show_game_over(winner_team, blue_score, red_score, custom_reason)

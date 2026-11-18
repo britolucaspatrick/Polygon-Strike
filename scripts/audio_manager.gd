@@ -31,8 +31,8 @@ func _create_audio_pools() -> void:
 		var p3d := AudioStreamPlayer3D.new()
 		p3d.bus = &"Master"
 		p3d.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
-		p3d.unit_size = 5.0
-		p3d.max_distance = 100.0
+		p3d.unit_size = 7.0
+		p3d.max_distance = 250.0
 		add_child(p3d)
 		players_3d.append(p3d)
 
@@ -58,7 +58,7 @@ func play(sound_name: String, volume_db: float = 0.0, pitch_scale: float = 1.0) 
 	fallback.play()
 
 ## Executa um som 3D posicional no espaço (tiros de bots, explosões, passos)
-func play_spatial(sound_name: String, global_pos: Vector3, volume_db: float = 0.0, pitch_scale: float = 1.0, max_dist: float = 90.0) -> void:
+func play_spatial(sound_name: String, global_pos: Vector3, volume_db: float = 0.0, pitch_scale: float = 1.0, max_dist: float = 200.0) -> void:
 	if not sounds.has(sound_name):
 		return
 		

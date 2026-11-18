@@ -46,6 +46,7 @@ var player_ref: Node = null
 var selected_time_seconds: float = 300.0
 var selected_target_kills: int = 25
 var is_in_match_setup: bool = true
+var is_game_over: bool = false
 
 func _ready() -> void:
 	_ensure_references()
@@ -68,6 +69,10 @@ func _ready() -> void:
 
 func _input(event: InputEvent) -> void:
 	if is_in_match_setup:
+		return
+		
+	# Se a partida acabou, o placar detalhado permanece sempre aberto na tela
+	if is_game_over:
 		return
 		
 	# Segurar TAB para ver Scoreboard
@@ -451,30 +456,38 @@ func add_killfeed_entry(killer_name: String, killer_team: String, victim_name: S
 
 func show_game_over(winner_team: String, final_blue: int, final_red: int, custom_detail: String = "") -> void:
 	_ensure_references()
-	if not game_over_panel:
-		return
+	is_game_over = true
+	
+	# Fecha painéis secundários
+	if buy_menu_panel:
+		buy_menu_panel.visible = false
+	if match_setup_panel:
+		match_setup_panel.visible = false
+	if game_over_panel:
+		game_over_panel.visible = false
 		
-	game_over_panel.visible = true
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	
-	if winner_team == "blue":
-		if game_over_title:
-			game_over_title.text = "🏆 VITÓRIA DO TIME AZUL!"
-			game_over_title.add_theme_color_override("font_color", Color(0.3, 0.7, 1.0))
-	elif winner_team == "red":
-		if game_over_title:
-			game_over_title.text = "💀 VITÓRIA DO TIME VERMELHO!"
-			game_over_title.add_theme_color_override("font_color", Color(1.0, 0.3, 0.3))
-	else:
-		if game_over_title:
-			game_over_title.text = "⚖️ EMPATE!"
-			game_over_title.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
-			
-	if game_over_detail:
-		if custom_detail != "":
-			game_over_detail.text = "%s\n\nPlacar Final: AZUL %d  x  %d VERMELHO\n\nPressione [F3] para Configurar Nova Partida" % [custom_detail, final_blue, final_red]
+	# Exibe o placar detalhado completo de forma permanente
+	set_scoreboard_visible(true)
+	
+	if scoreboard_header_label:
+		if winner_team == "blue":
+			scoreboard_header_label.text = "🏆 FIM DE PARTIDA: VITÓRIA DO TIME AZUL! (AZUL %d  x  %d VERMELHO)" % [final_blue, final_red]
+			scoreboard_header_label.add_theme_color_override("font_color", Color(0.35, 0.8, 1.0))
+		elif winner_team == "red":
+			scoreboard_header_label.text = "💀 FIM DE PARTIDA: VITÓRIA DO TIME VERMELHO! (AZUL %d  x  %d VERMELHO)" % [final_blue, final_red]
+			scoreboard_header_label.add_theme_color_override("font_color", Color(1.0, 0.35, 0.35))
 		else:
-			game_over_detail.text = "Placar Final: AZUL %d  x  %d VERMELHO\n\nPressione [F3] para Configurar Nova Partida" % [final_blue, final_red]
+			scoreboard_header_label.text = "⚖️ FIM DE PARTIDA: EMPATE! (AZUL %d  x  %d VERMELHO)" % [final_blue, final_red]
+			scoreboard_header_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
+			
+	var footer = find_child("FooterHint", true, false) as Label
+	if footer:
+		if custom_detail != "":
+			footer.text = "%s • Pressione [F3] para Jogar Novamente / Configurar" % custom_detail
+		else:
+			footer.text = "Placar Final • Pressione [F3] para Jogar Novamente / Configurar"
 
 ## Atualiza o relógio da partida no HUD superior
 func update_match_timer(seconds_left: float) -> void:

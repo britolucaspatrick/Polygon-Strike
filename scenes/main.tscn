@@ -70,252 +70,252 @@ shadow_enabled = true
 [node name="Floor" type="CSGBox3D" parent="Map"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 use_collision = true
-size = Vector3(130, 1, 150)
+size = Vector3(260, 1, 300)
 material = SubResource("StandardMaterial3D_floor")
 
 [node name="WallNorth" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, -75)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, -150)
 use_collision = true
-size = Vector3(130, 10, 1)
+size = Vector3(260, 14, 1)
 material = SubResource("StandardMaterial3D_wall")
 
 [node name="WallSouth" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 75)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, 150)
 use_collision = true
-size = Vector3(130, 10, 1)
+size = Vector3(260, 14, 1)
 material = SubResource("StandardMaterial3D_wall")
 
 [node name="WallEast" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65, 5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130, 7, 0)
 use_collision = true
-size = Vector3(1, 10, 150)
+size = Vector3(1, 14, 300)
 material = SubResource("StandardMaterial3D_wall")
 
 [node name="WallWest" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -65, 5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -130, 7, 0)
 use_collision = true
-size = Vector3(1, 10, 150)
+size = Vector3(1, 14, 300)
 material = SubResource("StandardMaterial3D_wall")
 
 [node name="BaseFloorBlue" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 62)
-size = Vector3(54, 0.1, 24)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 126)
+size = Vector3(108, 0.1, 48)
 material = SubResource("StandardMaterial3D_blue_zone")
 
 [node name="BaseFloorRed" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -62)
-size = Vector3(54, 0.1, 24)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -126)
+size = Vector3(108, 0.1, 48)
 material = SubResource("StandardMaterial3D_red_zone")
 
 [node name="BlueBaseCoverCenter" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 50)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 102)
 use_collision = true
-size = Vector3(6, 3, 3)
+size = Vector3(14, 4, 4)
 material = SubResource("StandardMaterial3D_crate_orange")
 
 [node name="BlueBaseCoverLeft" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 1.5, 52)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -34, 2, 112)
 use_collision = true
-size = Vector3(6, 3, 3)
+size = Vector3(12, 4, 4)
 material = SubResource("StandardMaterial3D_crate_orange")
 
 [node name="BlueBaseCoverRight" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 1.5, 52)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34, 2, 112)
 use_collision = true
-size = Vector3(6, 3, 3)
+size = Vector3(12, 4, 4)
 material = SubResource("StandardMaterial3D_crate_orange")
 
 [node name="RedBaseCoverCenter" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -50)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -102)
 use_collision = true
-size = Vector3(6, 3, 3)
+size = Vector3(14, 4, 4)
 material = SubResource("StandardMaterial3D_crate_orange")
 
 [node name="RedBaseCoverLeft" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 1.5, -52)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -34, 2, -112)
 use_collision = true
-size = Vector3(6, 3, 3)
+size = Vector3(12, 4, 4)
 material = SubResource("StandardMaterial3D_crate_orange")
 
 [node name="RedBaseCoverRight" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 1.5, -52)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34, 2, -112)
 use_collision = true
-size = Vector3(6, 3, 3)
+size = Vector3(12, 4, 4)
 material = SubResource("StandardMaterial3D_crate_orange")
 
 [node name="CenterPlatform" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 use_collision = true
-size = Vector3(30, 3, 30)
+size = Vector3(60, 4, 60)
 material = SubResource("StandardMaterial3D_mid_platform")
 
 [node name="RampSouth1" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 17)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 35)
 use_collision = true
-size = Vector3(10, 1, 4)
+size = Vector3(18, 2, 10)
 material = SubResource("StandardMaterial3D_mid_platform")
 
 [node name="RampSouth2" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 15)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 43)
 use_collision = true
-size = Vector3(10, 2, 4)
+size = Vector3(18, 2, 6)
 material = SubResource("StandardMaterial3D_mid_platform")
 
 [node name="RampNorth1" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -17)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -35)
 use_collision = true
-size = Vector3(10, 1, 4)
+size = Vector3(18, 2, 10)
 material = SubResource("StandardMaterial3D_mid_platform")
 
 [node name="RampNorth2" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, -15)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -43)
 use_collision = true
-size = Vector3(10, 2, 4)
+size = Vector3(18, 2, 6)
 material = SubResource("StandardMaterial3D_mid_platform")
 
 [node name="PillarTower1" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 6, -11)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24, 8, -24)
 use_collision = true
-size = Vector3(3.5, 10, 3.5)
+size = Vector3(6, 16, 6)
 material = SubResource("StandardMaterial3D_pillar")
 
 [node name="PillarTower2" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 6, -11)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 8, -24)
 use_collision = true
-size = Vector3(3.5, 10, 3.5)
+size = Vector3(6, 16, 6)
 material = SubResource("StandardMaterial3D_pillar")
 
 [node name="PillarTower3" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 6, 11)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24, 8, 24)
 use_collision = true
-size = Vector3(3.5, 10, 3.5)
+size = Vector3(6, 16, 6)
 material = SubResource("StandardMaterial3D_pillar")
 
 [node name="PillarTower4" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 6, 11)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 8, 24)
 use_collision = true
-size = Vector3(3.5, 10, 3.5)
+size = Vector3(6, 16, 6)
 material = SubResource("StandardMaterial3D_pillar")
 
 [node name="MidBridgeWest" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23, 2.7, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -52, 3.8, 0)
 use_collision = true
-size = Vector3(16, 0.6, 6)
+size = Vector3(44, 0.8, 10)
 material = SubResource("StandardMaterial3D_mid_platform")
 
 [node name="MidBridgeEast" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 2.7, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 52, 3.8, 0)
 use_collision = true
-size = Vector3(16, 0.6, 6)
+size = Vector3(44, 0.8, 10)
 material = SubResource("StandardMaterial3D_mid_platform")
 
 [node name="FlankWestPlatform" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42, 1.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -88, 2.5, 0)
 use_collision = true
-size = Vector3(14, 3, 14)
+size = Vector3(28, 5, 28)
 material = SubResource("StandardMaterial3D_crate_yellow")
 
 [node name="FlankWestCoverSouth" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42, 1.5, 26)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -88, 2.5, 55)
 use_collision = true
-size = Vector3(6, 3, 10)
+size = Vector3(12, 5, 20)
 material = SubResource("StandardMaterial3D_crate_orange")
 
 [node name="FlankWestCoverNorth" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42, 1.5, -26)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -88, 2.5, -55)
 use_collision = true
-size = Vector3(6, 3, 10)
+size = Vector3(12, 5, 20)
 material = SubResource("StandardMaterial3D_crate_orange")
 
 [node name="FlankEastPlatform" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42, 1.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88, 2.5, 0)
 use_collision = true
-size = Vector3(14, 3, 14)
+size = Vector3(28, 5, 28)
 material = SubResource("StandardMaterial3D_crate_yellow")
 
 [node name="FlankEastCoverSouth" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42, 1.5, 26)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88, 2.5, 55)
 use_collision = true
-size = Vector3(6, 3, 10)
+size = Vector3(12, 5, 20)
 material = SubResource("StandardMaterial3D_crate_orange")
 
 [node name="FlankEastCoverNorth" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42, 1.5, -26)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88, 2.5, -55)
 use_collision = true
-size = Vector3(6, 3, 10)
+size = Vector3(12, 5, 20)
 material = SubResource("StandardMaterial3D_crate_orange")
 
 [node name="MidApproachSouth1" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 1.5, 30)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -36, 2, 65)
 use_collision = true
-size = Vector3(5, 3, 4)
+size = Vector3(10, 4, 8)
 material = SubResource("StandardMaterial3D_crate_yellow")
 
 [node name="MidApproachSouth2" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 1.5, 30)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 36, 2, 65)
 use_collision = true
-size = Vector3(5, 3, 4)
+size = Vector3(10, 4, 8)
 material = SubResource("StandardMaterial3D_crate_yellow")
 
 [node name="MidApproachNorth1" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 1.5, -30)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -36, 2, -65)
 use_collision = true
-size = Vector3(5, 3, 4)
+size = Vector3(10, 4, 8)
 material = SubResource("StandardMaterial3D_crate_yellow")
 
 [node name="MidApproachNorth2" type="CSGBox3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 1.5, -30)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 36, 2, -65)
 use_collision = true
-size = Vector3(5, 3, 4)
+size = Vector3(10, 4, 8)
 material = SubResource("StandardMaterial3D_crate_yellow")
 
 [node name="Player" parent="." instance=ExtResource("2_player_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 64)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 130)
 
 [node name="Bots" type="Node3D" parent="."]
 
 [node name="Ally1" parent="Bots" instance=ExtResource("3_bot_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0.5, 62)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0.5, 126)
 team = "blue"
 bot_name = "Aliado 1"
 
 [node name="Ally2" parent="Bots" instance=ExtResource("3_bot_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.5, 62)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0.5, 126)
 team = "blue"
 bot_name = "Aliado 2"
 
 [node name="Ally3" parent="Bots" instance=ExtResource("3_bot_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0.5, 65)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -36, 0.5, 132)
 team = "blue"
 bot_name = "Aliado 3"
 
 [node name="Ally4" parent="Bots" instance=ExtResource("3_bot_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 0.5, 65)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 36, 0.5, 132)
 team = "blue"
 bot_name = "Aliado 4"
 
 [node name="Enemy1" parent="Bots" instance=ExtResource("3_bot_scene")]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0.5, -64)
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0.5, -130)
 team = "red"
 bot_name = "Inimigo 1"
 
 [node name="Enemy2" parent="Bots" instance=ExtResource("3_bot_scene")]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -8, 0.5, -62)
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -16, 0.5, -126)
 team = "red"
 bot_name = "Inimigo 2"
 
 [node name="Enemy3" parent="Bots" instance=ExtResource("3_bot_scene")]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 8, 0.5, -62)
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 16, 0.5, -126)
 team = "red"
 bot_name = "Inimigo 3"
 
 [node name="Enemy4" parent="Bots" instance=ExtResource("3_bot_scene")]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -18, 0.5, -65)
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -36, 0.5, -132)
 team = "red"
 bot_name = "Inimigo 4"
 
 [node name="Enemy5" parent="Bots" instance=ExtResource("3_bot_scene")]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 18, 0.5, -65)
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 36, 0.5, -132)
 team = "red"
 bot_name = "Inimigo 5"
 

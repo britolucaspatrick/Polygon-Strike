@@ -43,7 +43,7 @@ const MULT_LEGS: float = 0.7
 
 var current_health: int = 100
 var is_dead: bool = false
-var spawn_position: Vector3 = Vector3(0, 1.0, 64.0)
+var spawn_position: Vector3 = Vector3(0, 1.0, 130.0)
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity", 9.8)
 
 # Estado de compra e base
@@ -158,7 +158,7 @@ func _ready() -> void:
 	respawn_timer.one_shot = true
 	respawn_timer.timeout.connect(_respawn)
 	
-	raycast.target_position = Vector3(0, 0, -140.0)
+	raycast.target_position = Vector3(0, 0, -320.0)
 	raycast.collision_mask = 3
 	raycast.collide_with_bodies = true
 	raycast.collide_with_areas = true
@@ -222,8 +222,8 @@ func _physics_process(delta: float) -> void:
 	
 	move_and_slide()
 	
-	# 1. Base Aliada (Azul - Z > 44.0): Compras permitidas e vida recuperada para 100%
-	var in_zone: bool = (global_position.z > 44.0)
+	# 1. Base Aliada (Azul - Z > 95.0): Compras permitidas e vida recuperada para 100%
+	var in_zone: bool = (global_position.z > 95.0)
 	if in_zone != is_in_buy_zone:
 		is_in_buy_zone = in_zone
 		buy_zone_status_changed.emit(is_in_buy_zone)
@@ -233,8 +233,8 @@ func _physics_process(delta: float) -> void:
 		health_changed.emit(current_health, max_health)
 		AudioManager.play("heal", -1.0, 1.0)
 		
-	# 2. Base Inimiga (Vermelha - Z < -44.0): Bônus de Invasão de +$2,000!
-	var at_enemy_base: bool = (global_position.z < -44.0)
+	# 2. Base Inimiga (Vermelha - Z < -95.0): Bônus de Invasão de +$2,000!
+	var at_enemy_base: bool = (global_position.z < -95.0)
 	if at_enemy_base and not in_enemy_base:
 		in_enemy_base = true
 		if can_claim_enemy_base_reward:
@@ -242,7 +242,7 @@ func _physics_process(delta: float) -> void:
 			add_money(2000)
 			AudioManager.play("buy", 2.0, 1.0)
 			enemy_base_infiltrated.emit(2000)
-	elif not at_enemy_base and global_position.z > -36.0:
+	elif not at_enemy_base and global_position.z > -75.0:
 		in_enemy_base = false
 		can_claim_enemy_base_reward = true
 
