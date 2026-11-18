@@ -1,6 +1,8 @@
-# FPS 3D em Godot 4 - Campeonato 5 vs 5 (GDScript)
+# 🎯 Polygon Strike 5v5 - FPS 3D em Godot 4 (GDScript)
 
-Projeto de FPS 3D completo, competitivo e modular desenvolvido em **Godot 4.x** utilizando apenas primitivas 3D (`CSGBox3D`, malhas básicas e física de partículas) sem depender de assets externos.
+Projeto de FPS 3D competitivo 5v5 desenvolvido em **Godot 4.x** utilizando apenas primitivas 3D (`CSGBox3D`, malhas básicas e física de partículas) sem depender de assets externos, com IA Tática, Mercado na Base, Áudio Procedural e Locução de Headshot!
+
+### 📥 [Baixar Executável Windows (Pronto para Jogar sem Godot)](https://github.com/britolucaspatrick/Polygon-Strike/releases)
 
 ---
 

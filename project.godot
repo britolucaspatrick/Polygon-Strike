@@ -9,8 +9,8 @@ config_version=5
 
 [application]
 
-config/name="FPS 3D Godot"
-config/description="FPS 3D simples e funcional em Godot 4 sem assets externos - Campeonato 5v5 com Mercado CTRL."
+config/name="Polygon Strike 5v5"
+config/description="Polygon Strike 5v5 - FPS 3D competitivo em Godot 4 sem assets externos com Mercado da Base, Áudio Procedural e IA Tática."
 run/main_scene="res://scenes/main.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.svg"
