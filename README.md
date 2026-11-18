@@ -6,10 +6,21 @@ Projeto de FPS 3D competitivo 5v5 desenvolvido em **Godot 4.x** utilizando apena
 
 ---
 
-## ⏱️ Etapa de Configuração de Partida (Pré-Jogo)
+## ⏱️ Etapa de Configuração de Partida (Pré-Jogo) & Modos de Jogo
 
 Antes do tiroteio começar, o jogo abre uma tela central de **Configuração do Campeonato 5v5**:
 
+### 🌐 Modos de Jogo:
+- **🎮 Solo (Offline):** Jogue você contra e com bots com inteligência tática autônoma.
+- **👑 Hospedar (Host / UPnP):** Cria um servidor na sua máquina na porta `7777`.
+  - **Detecção Automática de IP Local:** Mostra o IP da sua rede Wi-Fi / Ethernet (ex: `192.168.x.x:7777`) para amigos na mesma casa conectarem instantaneamente.
+  - **🌐 UPnP Automático:** Ativa mapeamento de portas direto no seu roteador em segundo plano, liberando a porta `7777` UDP/TCP e descobrindo seu IP público para amigos jogarem pela internet sem precisar mexer em configurações do modem!
+- **🔗 Entrar com IP (Join):** Conecte ao jogo de um amigo digitando o IP (seja local na mesma rede, `127.0.0.1` na mesma máquina para testes, ou IP público de internet), definindo seu nome de combatente e escolhendo seu time (**Azul** ou **Vermelho**).
+- **Substituição Inteligente de Bots (Balanceamento 5v5):** Ao conectar como jogador humano, um dos bots do time correspondente dá lugar a você automaticamente para manter o torneio 5v5 equilibrado!
+
+---
+
+### ⚙️ Parâmetros da Partida:
 1. **Duração da Partida (Tempo):**
    - `1 Minuto (Blitz)` | `3 Minutos` | `5 Minutos (Padrão)` | `10 Minutos` | `Ilimitado`
 2. **Meta de Abates para Vitória:**
@@ -21,7 +32,7 @@ Antes do tiroteio começar, o jogo abre uma tela central de **Configuração do 
 4. **Controle de Tempo em Jogo:**
    - O relógio é exibido no topo da tela (`⏱️ MM:SS`).
    - Caso o tempo se esgote, a partida é encerrada por tempo e vence quem tiver mais abates/pontos! Se as equipes empatarem, o jogo declara **Empate**.
-5. **Botão `▶️ INICIAR PARTIDA`:**
+5. **Botão `▶️ INICIAR PARTIDA` / `👑 CRIAR SERVIDOR` / `🔗 ENTRAR NO SERVIDOR`:**
    - Aplica as regras selecionadas, trava o mouse e libera os combatentes e bots para o tiroteio.
 
 ---

@@ -1,6 +1,8 @@
 extends CanvasLayer
 
 signal start_match_requested(time_limit_sec: float, target_kills: int, difficulty: String)
+signal host_match_requested(port: int, use_upnp: bool, time_limit_sec: float, target_kills: int, difficulty: String)
+signal join_match_requested(ip: String, port: int, player_name: String, player_team: String)
 
 ## Referências aos nós de interface
 @onready var blue_score_label: Label = $HUDControl/TopScoreBar/VBoxContainer/HBoxContainer/BlueScore
@@ -47,6 +49,8 @@ var player_ref: Node = null
 var selected_time_seconds: float = 300.0
 var selected_target_kills: int = 25
 var selected_difficulty: String = "normal"
+var current_game_mode: String = "single" # "single", "host", "join"
+var join_team: String = "red" # "blue" ou "red"
 var is_in_match_setup: bool = true
 var is_game_over: bool = false
 
@@ -68,6 +72,19 @@ func _ready() -> void:
 	if match_setup_panel:
 		match_setup_panel.visible = true
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		
+	# Detecta IP local para já exibir na interface do Host
+	var local_ip = _detect_local_ip()
+	var host_ip_label = find_child("HostIpLabel", true, false) as Label
+	if host_ip_label:
+		host_ip_label.text = "🏠 IP Local da sua rede (Wi-Fi): %s:7777" % local_ip
+
+func _detect_local_ip() -> String:
+	var addresses := IP.get_local_addresses()
+	for addr in addresses:
+		if addr.begins_with("192.168.") or addr.begins_with("10.") or (addr.begins_with("172.") and not addr.contains(":")):
+			return addr
+	return "127.0.0.1"
 
 func _input(event: InputEvent) -> void:
 	if is_in_match_setup:
@@ -605,6 +622,28 @@ func show_event_notification(msg: String, color: Color = Color(1.0, 0.85, 0.2)) 
 
 ## Configura botões da tela de configuração inicial de partida
 func _setup_config_panel_buttons() -> void:
+	# Botões de modo de jogo (Solo, Host, Join)
+	var mode_buttons = {
+		"BtnModeSingle": "single",
+		"BtnModeHost": "host",
+		"BtnModeJoin": "join"
+	}
+	for btn_name in mode_buttons:
+		var btn = find_child(btn_name, true, false) as Button
+		if btn:
+			btn.focus_mode = Control.FOCUS_NONE
+			btn.pressed.connect(_on_mode_button_pressed.bind(mode_buttons[btn_name], btn_name))
+
+	# Botões de seleção de time no Join
+	var btn_team_blue = find_child("BtnJoinTeamBlue", true, false) as Button
+	if btn_team_blue:
+		btn_team_blue.focus_mode = Control.FOCUS_NONE
+		btn_team_blue.pressed.connect(func(): _set_join_team("blue"))
+	var btn_team_red = find_child("BtnJoinTeamRed", true, false) as Button
+	if btn_team_red:
+		btn_team_red.focus_mode = Control.FOCUS_NONE
+		btn_team_red.pressed.connect(func(): _set_join_team("red"))
+
 	var time_buttons = {
 		"BtnTime1": 60.0,
 		"BtnTime3": 180.0,
@@ -646,10 +685,56 @@ func _setup_config_panel_buttons() -> void:
 		btn_start.focus_mode = Control.FOCUS_NONE
 		btn_start.pressed.connect(_on_start_match_clicked)
 		
+	_highlight_selected_mode("BtnModeSingle")
+	_set_join_team("red")
 	_highlight_selected_time("BtnTime5")
 	_highlight_selected_kills("BtnKills25")
 	_highlight_selected_diff("BtnDiffNormal")
 	_update_setup_summary()
+
+func _on_mode_button_pressed(mode: String, btn_name: String) -> void:
+	current_game_mode = mode
+	_highlight_selected_mode(btn_name)
+	
+	var host_box = find_child("HostNetworkBox", true, false) as VBoxContainer
+	var join_box = find_child("JoinNetworkBox", true, false) as VBoxContainer
+	var btn_start = find_child("BtnStartMatch", true, false) as Button
+	
+	if host_box:
+		host_box.visible = (mode == "host")
+	if join_box:
+		join_box.visible = (mode == "join")
+		
+	if btn_start:
+		match mode:
+			"single":
+				btn_start.text = "▶️ INICIAR PARTIDA OFFLINE"
+			"host":
+				btn_start.text = "👑 CRIAR SERVIDOR (HOST & JOGAR)"
+			"join":
+				btn_start.text = "🔗 ENTRAR NO SERVIDOR (JOIN)"
+				
+	_update_setup_summary()
+	AudioManager.play("empty_click", 0.0, 1.2)
+
+func _highlight_selected_mode(active_name: String) -> void:
+	var names = ["BtnModeSingle", "BtnModeHost", "BtnModeJoin"]
+	for n in names:
+		var btn = find_child(n, true, false) as Button
+		if btn:
+			if n == active_name:
+				btn.modulate = Color(0.2, 0.95, 1.0)
+			else:
+				btn.modulate = Color(0.7, 0.7, 0.7)
+
+func _set_join_team(chosen_team: String) -> void:
+	join_team = chosen_team
+	var btn_blue = find_child("BtnJoinTeamBlue", true, false) as Button
+	var btn_red = find_child("BtnJoinTeamRed", true, false) as Button
+	if btn_blue:
+		btn_blue.modulate = Color(0.2, 0.6, 1.0) if join_team == "blue" else Color(0.6, 0.6, 0.6)
+	if btn_red:
+		btn_red.modulate = Color(1.0, 0.3, 0.3) if join_team == "red" else Color(0.6, 0.6, 0.6)
 
 func _on_time_button_pressed(seconds: float, btn_name: String) -> void:
 	selected_time_seconds = seconds
@@ -709,11 +794,56 @@ func _update_setup_summary() -> void:
 			"normal": "Soldado (Normal)",
 			"hard": "Elite (Veterano)"
 		}
-		setup_summary_label.text = "Configuração: %s | Meta: %d Abates | IA: %s" % [time_str, selected_target_kills, diff_names.get(selected_difficulty, "Soldado")]
+		var mode_desc = "Solo Offline"
+		if current_game_mode == "host":
+			mode_desc = "👑 Servidor Host (LAN + UPnP)"
+		elif current_game_mode == "join":
+			mode_desc = "🔗 Cliente (Conectar a Host)"
+			
+		setup_summary_label.text = "Modo: %s | Tempo: %s | Meta: %d Abates | IA: %s" % [
+			mode_desc, time_str, selected_target_kills, diff_names.get(selected_difficulty, "Soldado")
+		]
 
 func _on_start_match_clicked() -> void:
+	match current_game_mode:
+		"single":
+			close_match_setup()
+			start_match_requested.emit(selected_time_seconds, selected_target_kills, selected_difficulty)
+		"host":
+			close_match_setup()
+			var use_upnp: bool = true
+			var upnp_check = find_child("HostUpnpCheck", true, false) as CheckBox
+			if upnp_check:
+				use_upnp = upnp_check.button_pressed
+			host_match_requested.emit(7777, use_upnp, selected_time_seconds, selected_target_kills, selected_difficulty)
+		"join":
+			var ip_edit = find_child("JoinIpEdit", true, false) as LineEdit
+			var port_edit = find_child("JoinPortEdit", true, false) as LineEdit
+			var name_edit = find_child("JoinNameEdit", true, false) as LineEdit
+			
+			var ip: String = ip_edit.text.strip_edges() if ip_edit else "127.0.0.1"
+			var port: int = port_edit.text.to_int() if port_edit and port_edit.text.to_int() > 0 else 7777
+			var p_name: String = name_edit.text.strip_edges() if name_edit and not name_edit.text.strip_edges().is_empty() else "Jogador 2"
+			
+			set_join_status("Conectando ao servidor %s:%d..." % [ip, port], false)
+			join_match_requested.emit(ip, port, p_name, join_team)
+
+## Fecha o painel de setup e captura o cursor
+func close_match_setup() -> void:
 	is_in_match_setup = false
 	if match_setup_panel:
 		match_setup_panel.visible = false
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	start_match_requested.emit(selected_time_seconds, selected_target_kills, selected_difficulty)
+
+## Helpers para status de rede no HUD
+func set_host_upnp_status(msg: String, is_success: bool) -> void:
+	var label = find_child("HostUpnpStatusLabel", true, false) as Label
+	if label:
+		label.text = msg
+		label.add_theme_color_override("font_color", Color(0.3, 0.95, 0.4) if is_success else Color(0.95, 0.85, 0.3))
+
+func set_join_status(msg: String, is_error: bool) -> void:
+	var label = find_child("JoinStatusLabel", true, false) as Label
+	if label:
+		label.text = msg
+		label.add_theme_color_override("font_color", Color(1.0, 0.35, 0.35) if is_error else Color(0.4, 0.85, 1.0))

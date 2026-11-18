@@ -19,6 +19,14 @@ signal aim_changed(is_aiming: bool)
 @export var max_health: int = 100
 @export var money: int = 1200 # Dinheiro inicial do jogador
 
+## Configurações de Multiplayer
+var peer_id: int = 1
+var is_remote: bool = false
+var sync_target_pos: Vector3 = Vector3.ZERO
+var sync_target_rot_y: float = 0.0
+var sync_target_head_x: float = 0.0
+var sync_timer: float = 0.0
+
 var match_active: bool = false
 var can_claim_enemy_base_reward: bool = true
 var in_enemy_base: bool = false
@@ -150,6 +158,7 @@ var grenade_scene: PackedScene = preload("res://scenes/grenade.tscn")
 func _ready() -> void:
 	current_health = max_health
 	spawn_position = global_position
+	sync_target_pos = global_position
 	
 	collision_layer = 2
 	collision_mask = 3
@@ -178,7 +187,33 @@ func _ready() -> void:
 	grenades_changed.emit(grenades_count)
 	buy_zone_status_changed.emit(is_in_buy_zone)
 
+## Configura o jogador para rede (autoridade, time e visibilidade de modelo 3D)
+func setup_multiplayer(id: int, p_name: String, p_team: String, remote: bool) -> void:
+	peer_id = id
+	is_remote = remote
+	character_name = p_name
+	team = p_team
+	set_multiplayer_authority(id)
+	
+	var body_mesh = get_node_or_null("MeshInstance3D") as MeshInstance3D
+	if is_remote:
+		if camera:
+			camera.current = false
+		if body_mesh:
+			body_mesh.visible = true
+			var mat := StandardMaterial3D.new()
+			mat.albedo_color = Color(0.2, 0.45, 0.95) if team == "blue" else Color(0.95, 0.25, 0.25)
+			mat.roughness = 0.5
+			body_mesh.material_override = mat
+	else:
+		if camera:
+			camera.current = true
+		if body_mesh:
+			body_mesh.visible = false
+
 func _unhandled_input(event: InputEvent) -> void:
+	if is_remote:
+		return
 	if not match_active or is_dead:
 		return
 		
@@ -231,6 +266,13 @@ func _physics_process(delta: float) -> void:
 	if not match_active or is_dead:
 		return
 		
+	if is_remote:
+		global_position = global_position.lerp(sync_target_pos, 16.0 * delta)
+		rotation.y = lerp_angle(rotation.y, sync_target_rot_y, 16.0 * delta)
+		if head:
+			head.rotation.x = lerp_angle(head.rotation.x, sync_target_head_x, 16.0 * delta)
+		return
+		
 	_handle_gravity(delta)
 	_handle_jump()
 	_handle_aim(delta)
@@ -239,6 +281,13 @@ func _physics_process(delta: float) -> void:
 	_handle_shooting()
 	
 	move_and_slide()
+	
+	# Sincroniza posição e rotação pela rede quando conectado
+	if multiplayer.has_multiplayer_peer() and multiplayer.multiplayer_peer.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTED:
+		sync_timer += delta
+		if sync_timer >= 0.033:
+			sync_timer = 0.0
+			rpc("rpc_sync_transform", global_position, rotation.y, head.rotation.x)
 	
 	# 1. Base Aliada (Azul - Z > 44.0): Compras permitidas e vida recuperada para 100%
 	var in_zone: bool = (global_position.z > 44.0)
@@ -416,6 +465,10 @@ func _shoot_projectile(w: Dictionary) -> void:
 		to_pos = raycast.global_transform * raycast.target_position
 		
 	_spawn_tracer_line(from_pos, to_pos)
+	
+	# Transmite efeito visual e sonoro do disparo aos outros peers
+	if multiplayer.has_multiplayer_peer() and multiplayer.multiplayer_peer.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTED:
+		rpc("rpc_shoot_effect", from_pos, to_pos, current_weapon_id)
 
 ## Clique seco ao tentar atirar sem munição
 func _dry_fire_effect() -> void:
@@ -472,6 +525,9 @@ func _throw_grenade() -> void:
 	nade.angular_velocity = Vector3(randf_range(-4, 4), randf_range(-4, 4), randf_range(-4, 4))
 	
 	get_tree().root.add_child(nade)
+	
+	if multiplayer.has_multiplayer_peer() and multiplayer.multiplayer_peer.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTED:
+		rpc("rpc_throw_grenade_network", nade.global_position, throw_dir, character_name, team)
 
 ## Troca a arma atual equipada
 func _equip_weapon(weapon_id: String) -> void:
@@ -667,6 +723,11 @@ func take_damage(base_amount: int, attacker_name: String = "Inimigo", attacker_t
 	if is_dead or attacker_team == team:
 		return
 		
+	# Se for um nó de jogador remoto, redireciona o dano via RPC para a máquina do jogador dono
+	if is_remote and multiplayer.has_multiplayer_peer() and multiplayer.multiplayer_peer.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTED:
+		rpc_id(peer_id, "rpc_receive_damage", base_amount, attacker_name, attacker_team, hit_point)
+		return
+		
 	var relative_y: float = 1.0
 	if hit_point != Vector3.ZERO:
 		relative_y = hit_point.y - global_position.y
@@ -693,6 +754,10 @@ func _die(killer_name: String, killer_team: String, is_headshot: bool = false) -
 	velocity = Vector3.ZERO
 	$CollisionShape3D.set_deferred("disabled", true)
 	
+	# Se estiver em rede, avisa os outros clientes sobre o abate
+	if multiplayer.has_multiplayer_peer() and multiplayer.multiplayer_peer.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTED:
+		rpc("rpc_notify_death", killer_name, killer_team, is_headshot)
+		
 	respawn_timer.start(2.8)
 
 func _respawn() -> void:
@@ -704,3 +769,46 @@ func _respawn() -> void:
 	velocity = Vector3.ZERO
 	$CollisionShape3D.set_deferred("disabled", false)
 	health_changed.emit(current_health, max_health)
+
+## RPCs de Sincronização Multiplayer
+@rpc("unreliable")
+func rpc_sync_transform(pos: Vector3, rot_y: float, head_x: float) -> void:
+	sync_target_pos = pos
+	sync_target_rot_y = rot_y
+	sync_target_head_x = head_x
+
+@rpc("any_peer")
+func rpc_receive_damage(base_amount: int, attacker_name: String, attacker_team: String, hit_point: Vector3) -> void:
+	if not is_remote:
+		take_damage(base_amount, attacker_name, attacker_team, hit_point)
+
+@rpc("any_peer")
+func rpc_notify_death(killer_name: String, killer_team: String, is_headshot: bool) -> void:
+	if is_remote and not is_dead:
+		is_dead = true
+		died.emit(killer_name, killer_team, character_name, team, is_headshot)
+		$CollisionShape3D.set_deferred("disabled", true)
+		respawn_timer.start(2.8)
+
+@rpc("any_peer")
+func rpc_shoot_effect(from_pos: Vector3, to_pos: Vector3, weapon_id: String) -> void:
+	_spawn_tracer_line(from_pos, to_pos)
+	match weapon_id:
+		"magnum":
+			AudioManager.play("shoot_magnum", 0.0, 1.0)
+		"smg":
+			AudioManager.play("shoot_smg", -2.0, 1.0)
+		"rifle", "lmg":
+			AudioManager.play("shoot_rifle", 0.0, 1.0)
+		_:
+			AudioManager.play("shoot_pistol", 0.0, 1.0)
+
+@rpc("any_peer")
+func rpc_throw_grenade_network(spawn_pos: Vector3, velocity_vec: Vector3, thrower: String, t_team: String) -> void:
+	var nade = grenade_scene.instantiate() as RigidBody3D
+	nade.thrower_name = thrower
+	nade.thrower_team = t_team
+	nade.global_position = spawn_pos
+	nade.linear_velocity = velocity_vec
+	nade.angular_velocity = Vector3(randf_range(-4, 4), randf_range(-4, 4), randf_range(-4, 4))
+	get_tree().root.add_child(nade)

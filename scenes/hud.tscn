@@ -753,10 +753,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -340.0
-offset_top = -285.0
-offset_right = 340.0
-offset_bottom = 285.0
+offset_left = -380.0
+offset_top = -320.0
+offset_right = 380.0
+offset_bottom = 320.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -785,8 +785,34 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 0.85)
 theme_override_font_sizes/font_size = 13
-text = "Escolha a duração e a meta de abates antes de iniciar o combate!"
+text = "Escolha o modo de jogo (Solo, Hospedar ou Conectar) e configure a partida!"
 horizontal_alignment = 1
+
+[node name="ModeHBox" type="HBoxContainer" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="BtnModeSingle" type="Button" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/ModeHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 38)
+text = "🎮 Solo (Offline)"
+
+[node name="BtnModeHost" type="Button" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/ModeHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 38)
+text = "👑 Hospedar (Host / UPnP)"
+
+[node name="BtnModeJoin" type="Button" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/ModeHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 38)
+text = "🔗 Entrar com IP (Join)"
 
 [node name="TimeTitle" type="Label" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -910,6 +936,98 @@ layout_mode = 2
 size_flags_horizontal = 3
 custom_minimum_size = Vector2(0, 42)
 text = "Veterano (Elite)"
+
+[node name="HostNetworkBox" type="VBoxContainer" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="HostIpLabel" type="Label" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/HostNetworkBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "🏠 IP Local da sua rede (Wi-Fi): 192.168.1.x:7777"
+
+[node name="HostUpnpCheck" type="CheckBox" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/HostNetworkBox"]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+text = "🌐 Ativar UPnP Automático (Abrir portas para jogar pela Internet)"
+
+[node name="HostUpnpStatusLabel" type="Label" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/HostNetworkBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.85, 0.3, 1)
+theme_override_font_sizes/font_size = 13
+text = "🌐 Status UPnP: Ativado (detectará seu IP público ao iniciar o servidor)"
+
+[node name="JoinNetworkBox" type="VBoxContainer" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="JoinAddressHBox" type="HBoxContainer" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/JoinNetworkBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="JoinIpTitle" type="Label" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/JoinNetworkBox/JoinAddressHBox"]
+layout_mode = 2
+text = "IP do Host:"
+
+[node name="JoinIpEdit" type="LineEdit" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/JoinNetworkBox/JoinAddressHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Ex: 192.168.1.15 ou 127.0.0.1 ou IP Público"
+text = "127.0.0.1"
+
+[node name="JoinPortTitle" type="Label" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/JoinNetworkBox/JoinAddressHBox"]
+layout_mode = 2
+text = "Porta:"
+
+[node name="JoinPortEdit" type="LineEdit" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/JoinNetworkBox/JoinAddressHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(80, 0)
+text = "7777"
+
+[node name="JoinPlayerHBox" type="HBoxContainer" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/JoinNetworkBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="JoinNameTitle" type="Label" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/JoinNetworkBox/JoinPlayerHBox"]
+layout_mode = 2
+text = "Seu Nome:"
+
+[node name="JoinNameEdit" type="LineEdit" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/JoinNetworkBox/JoinPlayerHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Jogador 2"
+
+[node name="JoinTeamTitle" type="Label" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/JoinNetworkBox/JoinPlayerHBox"]
+layout_mode = 2
+text = "Time:"
+
+[node name="BtnJoinTeamBlue" type="Button" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/JoinNetworkBox/JoinPlayerHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Azul"
+
+[node name="BtnJoinTeamRed" type="Button" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/JoinNetworkBox/JoinPlayerHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Vermelho"
+
+[node name="JoinStatusLabel" type="Label" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/JoinNetworkBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.85, 0.9, 1)
+theme_override_font_sizes/font_size = 13
+text = "Pronto para conectar ao servidor do seu amigo."
 
 [node name="SetupSummaryLabel" type="Label" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
