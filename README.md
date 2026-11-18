@@ -112,6 +112,7 @@ O jogo conta com uma engine de áudio em tempo real (`AudioManager`) que sinteti
   - Os disparos dos **9 bots** espalhados pela arena de 130m possuem posicionamento 3D real (`AudioStreamPlayer3D`), permitindo identificar a direção e distância dos tiroteios pelo fone de ouvido.
 - **Detonação de Granada:** Estrondo de impacto e decaimento em baixa frequência com alcance estendido.
 - **Feedback de Combate:**
+  - *Locutor Falando "HEADSHOT!":* Ao abater um adversário com tiro na cabeça (20% topo), o locutor fala em voz alta e clara **"HEADSHOT!"** (via síntese de voz TTS do sistema combinada com síntese procedural arcade), exibindo banner de destaque no centro da tela e concedendo bônus de **+$400**!
   - *Hitmarker Tick:* Som clássico ao acertar qualquer tiro.
   - *Headshot Bell:* Som nítido metálico/harmônico ao acertar a cabeça (20% topo).
   - *Eliminação Confirmada:* Tom triunfante ao abater um adversário.

@@ -81,6 +81,28 @@ func play_spatial(sound_name: String, global_pos: Vector3, volume_db: float = 0.
 	fallback.stream = stream
 	fallback.play()
 
+## Fala "HEADSHOT!" usando síntese de voz (TTS) e locução arcade
+func speak_headshot() -> void:
+	play("kill", 2.0, 1.1)
+	play("headshot", 4.0, 1.0)
+	play("headshot_voice", 3.0, 1.0)
+	
+	# Utiliza Text-to-Speech (TTS) nativo do sistema para falar "Headshot!"
+	if DisplayServer.has_feature(DisplayServer.FEATURE_TEXT_TO_SPEECH):
+		var voices: Array = DisplayServer.tts_get_voices()
+		var voice_id: String = ""
+		for v in voices:
+			var lang: String = str(v.get("language", "")).to_lower()
+			var v_name: String = str(v.get("name", "")).to_lower()
+			if "en" in lang or "david" in v_name or "george" in v_name:
+				voice_id = str(v.get("id", ""))
+				break
+		if voice_id == "" and voices.size() > 0:
+			voice_id = str(voices[0].get("id", ""))
+			
+		DisplayServer.tts_stop()
+		DisplayServer.tts_speak("Headshot!", voice_id, 100, 0.9, 1.1)
+
 ## Sintetizador PCM procedual para efeitos sonoros
 func _synthesize_all_sounds() -> void:
 	var create_stream = func(duration: float, generator: Callable) -> AudioStreamWAV:
@@ -222,4 +244,31 @@ func _synthesize_all_sounds() -> void:
 		var thud: float = sin(t * 85.0 * TAU) * 0.5
 		var noise: float = (randf() * 2.0 - 1.0) * exp(-t * 65.0) * 0.35
 		return (thud + noise) * env
+	)
+	
+	# 16. Efeito de Locução Arcade Procedural para Headshot ("HEAD-SHOT!")
+	sounds["headshot_voice"] = create_stream.call(0.56, func(t: float, _d: float) -> float:
+		var s: float = 0.0
+		if t < 0.22:
+			# Sílaba 1: "HEAD" (Fricativa /h/ + Formantes de /eh/ + fecho /d/)
+			var env1: float = sin((t / 0.22) * PI)
+			var h_noise: float = (randf() * 2.0 - 1.0) * exp(-t * 60.0) * 0.35
+			var pitch_f0: float = lerp(135.0, 115.0, t / 0.22)
+			var f1: float = 550.0
+			var f2: float = 1750.0
+			var voice: float = sin(t * pitch_f0 * TAU) * 0.3 + sin(t * f1 * TAU) * 0.45 + sin(t * f2 * TAU) * 0.3
+			s = (voice + h_noise) * env1
+		else:
+			# Sílaba 2: "SHOT" (Ruído /sh/ + Formantes de /aw/ + oclusiva /t/)
+			var t2: float = t - 0.22
+			var dur2: float = 0.34
+			var env2: float = exp(-t2 * 6.5) * (1.0 - exp(-t2 * 40.0))
+			var sh_noise: float = (randf() * 2.0 - 1.0) * exp(-t2 * 28.0) * 0.45 * sin(t2 * 3200.0 * TAU)
+			var pitch_f0: float = lerp(110.0, 75.0, t2 / dur2)
+			var f1: float = 620.0
+			var f2: float = 1100.0
+			var voice: float = sin(t2 * pitch_f0 * TAU) * 0.4 + sin(t2 * f1 * TAU) * 0.5 + sin(t2 * f2 * TAU) * 0.25
+			var t_click: float = (randf() * 2.0 - 1.0) * exp(-(0.32 - t2) * 50.0) * 0.4 if t2 > 0.28 else 0.0
+			s = (voice + sh_noise + t_click) * env2
+		return clamp(s * 0.9, -1.0, 1.0)
 	)

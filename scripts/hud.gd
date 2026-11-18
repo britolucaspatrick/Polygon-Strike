@@ -481,18 +481,21 @@ func trigger_heal_flash() -> void:
 	flash_tween = create_tween()
 	flash_tween.tween_property(damage_flash, "color:a", 0.0, 0.35)
 
-func add_killfeed_entry(killer_name: String, killer_team: String, victim_name: String, victim_team: String) -> void:
+func add_killfeed_entry(killer_name: String, killer_team: String, victim_name: String, victim_team: String, is_headshot: bool = false) -> void:
 	_ensure_references()
 	if not killfeed_container:
 		return
 		
 	var label := Label.new()
-	label.text = "%s [%s] ➔ %s [%s]" % [killer_name, killer_team.to_upper(), victim_name, victim_team.to_upper()]
+	var sep_str := " [🎯 HEADSHOT] ➔ " if is_headshot else " ➔ "
+	label.text = "%s [%s]%s%s [%s]" % [killer_name, killer_team.to_upper(), sep_str, victim_name, victim_team.to_upper()]
 	label.add_theme_font_size_override("font_size", 14)
 	label.add_theme_constant_override("outline_size", 4)
 	label.add_theme_color_override("font_outline_color", Color.BLACK)
 	
-	if killer_team == "blue":
+	if is_headshot:
+		label.add_theme_color_override("font_color", Color(1.0, 0.25, 0.25))
+	elif killer_team == "blue":
 		label.add_theme_color_override("font_color", Color(0.4, 0.75, 1.0))
 	else:
 		label.add_theme_color_override("font_color", Color(1.0, 0.4, 0.4))
@@ -506,6 +509,10 @@ func add_killfeed_entry(killer_name: String, killer_team: String, victim_name: S
 	tween.tween_interval(3.5)
 	tween.tween_property(label, "modulate:a", 0.0, 0.5)
 	tween.tween_callback(label.queue_free)
+
+## Exibe notificação de destaque com banner no centro da tela ao abater por headshot
+func show_headshot_banner() -> void:
+	show_event_notification("🎯 HEADSHOT! ELIMINAÇÃO CONFIRMADA!", Color(1.0, 0.2, 0.2))
 
 func show_game_over(winner_team: String, final_blue: int, final_red: int, custom_detail: String = "") -> void:
 	_ensure_references()

@@ -2,7 +2,7 @@ extends CharacterBody3D
 
 ## Sinais de estado do jogador
 signal health_changed(current_hp: int, max_hp: int)
-signal died(killer_name: String, killer_team: String, victim_name: String, victim_team: String)
+signal died(killer_name: String, killer_team: String, victim_name: String, victim_team: String, is_headshot: bool)
 signal damage_dealt_to_self(amount: int, attacker_name: String, attacker_team: String)
 
 ## Sinais de Armas, Dinheiro e Mercado
@@ -664,8 +664,10 @@ func take_damage(base_amount: int, attacker_name: String = "Inimigo", attacker_t
 		relative_y = hit_point.y - global_position.y
 		
 	var multiplier: float = MULT_CHEST
+	var is_headshot: bool = false
 	if relative_y >= 1.52:
 		multiplier = MULT_HEAD
+		is_headshot = true
 	elif relative_y < 0.57:
 		multiplier = MULT_LEGS
 		
@@ -675,11 +677,11 @@ func take_damage(base_amount: int, attacker_name: String = "Inimigo", attacker_t
 	health_changed.emit(current_health, max_health)
 	
 	if current_health <= 0:
-		_die(attacker_name, attacker_team)
+		_die(attacker_name, attacker_team, is_headshot)
 
-func _die(killer_name: String, killer_team: String) -> void:
+func _die(killer_name: String, killer_team: String, is_headshot: bool = false) -> void:
 	is_dead = true
-	died.emit(killer_name, killer_team, character_name, team)
+	died.emit(killer_name, killer_team, character_name, team, is_headshot)
 	velocity = Vector3.ZERO
 	$CollisionShape3D.set_deferred("disabled", true)
 	

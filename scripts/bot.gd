@@ -1,7 +1,7 @@
 extends CharacterBody3D
 
 ## Sinais de evento do bot
-signal died(killer_name: String, killer_team: String, victim_name: String, victim_team: String)
+signal died(killer_name: String, killer_team: String, victim_name: String, victim_team: String, is_headshot: bool)
 signal health_changed(new_hp: int, max_hp: int)
 signal damage_dealt_to_self(amount: int, attacker_name: String, attacker_team: String)
 
@@ -329,11 +329,13 @@ func take_damage(base_amount: int, attacker_name: String = "Alguém", attacker_t
 	var multiplier: float = MULT_CHEST
 	var hit_part_name: String = "PEITO"
 	var number_color: Color = Color(1.0, 0.9, 0.9)
+	var is_headshot: bool = false
 	
 	if relative_y >= 1.52:
 		multiplier = MULT_HEAD
 		hit_part_name = "HEADSHOT!"
 		number_color = Color(1.0, 0.2, 0.2) # Vermelho vivo no headshot
+		is_headshot = true
 	elif relative_y < 0.57:
 		multiplier = MULT_LEGS
 		hit_part_name = "PERNAS"
@@ -358,7 +360,7 @@ func take_damage(base_amount: int, attacker_name: String = "Alguém", attacker_t
 			current_state = State.COMBAT
 			
 	if current_health <= 0:
-		_die(attacker_name, attacker_team)
+		_die(attacker_name, attacker_team, is_headshot)
 
 ## Cria indicador flutuante 3D de dano (Damage Number)
 func _spawn_damage_indicator(damage_dealt: int, part_text: String, color: Color, hit_point: Vector3) -> void:
@@ -396,9 +398,9 @@ func _flash_hit() -> void:
 	hit_tween.tween_property(team_main_mat, "albedo_color", orig_color, 0.12)
 
 ## Lógica de morte
-func _die(killer_name: String, killer_team: String) -> void:
+func _die(killer_name: String, killer_team: String, is_headshot: bool = false) -> void:
 	current_state = State.DEAD
-	died.emit(killer_name, killer_team, bot_name, team)
+	died.emit(killer_name, killer_team, bot_name, team, is_headshot)
 	
 	collision_shape.set_deferred("disabled", true)
 	velocity = Vector3.ZERO

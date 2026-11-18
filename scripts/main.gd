@@ -223,18 +223,24 @@ func _on_player_health_changed(current_hp: int, max_hp: int) -> void:
 	last_player_hp = current_hp
 
 ## Processa abates, placar e condição de vitória
-func _on_combatant_died(killer_name: String, killer_team: String, victim_name: String, victim_team: String) -> void:
+func _on_combatant_died(killer_name: String, killer_team: String, victim_name: String, victim_team: String, is_headshot: bool = false) -> void:
 	# 1. Registra no Killfeed do HUD
 	if hud:
-		hud.add_killfeed_entry(killer_name, killer_team, victim_name, victim_team)
+		hud.add_killfeed_entry(killer_name, killer_team, victim_name, victim_team, is_headshot)
 		
 	# 2. Atualiza estatísticas individuais
 	if killer_name in combatant_stats:
 		combatant_stats[killer_name]["kills"] += 1
-		combatant_stats[killer_name]["score"] += 150
+		combatant_stats[killer_name]["score"] += 200 if is_headshot else 150
 		if player and killer_name == player.character_name:
-			player.add_money(300)
-			AudioManager.play("kill", 1.5, 1.0)
+			var reward: int = 400 if is_headshot else 300
+			player.add_money(reward)
+			if is_headshot:
+				AudioManager.speak_headshot()
+				if hud:
+					hud.show_headshot_banner()
+			else:
+				AudioManager.play("kill", 1.5, 1.0)
 		
 	if victim_name in combatant_stats:
 		combatant_stats[victim_name]["deaths"] += 1
