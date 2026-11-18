@@ -15,7 +15,7 @@ enum State { PATROL, COMBAT, DEAD }
 @export var combat_speed: float = 7.5
 @export var damage: int = 10
 @export var fire_rate: float = 0.28
-@export var sight_range: float = 140.0
+@export var sight_range: float = 85.0
 
 ## Multiplicadores de Dano por Parte do Corpo
 # 20% Topo: Cabeça (1.52m a 1.90m) -> 2.2x
@@ -151,13 +151,13 @@ func _process_patrol(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0, walk_speed * delta * 2)
 		velocity.z = move_toward(velocity.z, 0, walk_speed * delta * 2)
 
-## Escolhe pontos para patrulhar avançando pelo mapa ampliado
+## Escolhe pontos para patrulhar avançando para o complexo central e flancos
 func _pick_new_patrol_destination() -> void:
-	repath_timer = randf_range(3.5, 6.5)
+	repath_timer = randf_range(3.0, 5.5)
 	# Avança rumo ao campo inimigo
-	var forward_z: float = randf_range(-40.0, -115.0) if team == "blue" else randf_range(40.0, 115.0)
+	var forward_z: float = randf_range(-25.0, -50.0) if team == "blue" else randf_range(25.0, 50.0)
 	target_nav_point = Vector3(
-		randf_range(-85.0, 85.0),
+		randf_range(-40.0, 40.0),
 		0.5,
 		forward_z
 	)
@@ -246,7 +246,7 @@ func _perform_shot(target_pos: Vector3) -> void:
 	var shoot_dir := (final_aim_pos - from_pos).normalized()
 	
 	var space_state := get_world_3d().direct_space_state
-	var query := PhysicsRayQueryParameters3D.create(from_pos, from_pos + shoot_dir * 160.0)
+	var query := PhysicsRayQueryParameters3D.create(from_pos, from_pos + shoot_dir * 100.0)
 	query.exclude = [self]
 	query.collision_mask = 3 # Colide com cenário (1) e combatentes (2)
 	

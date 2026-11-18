@@ -11,6 +11,7 @@ signal ammo_changed(current_clip: int, reserve_ammo: int, weapon_name: String)
 signal grenades_changed(count: int)
 signal buy_zone_status_changed(in_buy_zone: bool)
 signal enemy_base_infiltrated(bonus_amount: int)
+signal aim_changed(is_aiming: bool)
 
 ## Configurações de Time e Identificação
 @export var team: String = "blue"
@@ -43,11 +44,19 @@ const MULT_LEGS: float = 0.7
 
 var current_health: int = 100
 var is_dead: bool = false
-var spawn_position: Vector3 = Vector3(0, 1.0, 130.0)
+var spawn_position: Vector3 = Vector3(0, 1.0, 64.0)
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity", 9.8)
 
 # Estado de compra e base
 var is_in_buy_zone: bool = true
+
+# Sistema de Mira (ADS)
+var is_aiming: bool = false
+var default_fov: float = 75.0
+var aim_fov: float = 50.0
+var default_weapon_pos: Vector3 = Vector3(0.28, -0.22, -0.45)
+var ads_weapon_pos: Vector3 = Vector3(0.0, -0.155, -0.38)
+var current_weapon_base_pos: Vector3 = Vector3(0.28, -0.22, -0.45)
 
 # Sistema de Armas e Munição
 var grenades_count: int = 1
@@ -117,11 +126,10 @@ var weapons_db: Dictionary = {
 	}
 }
 
-var owned_weapons: Array[String] = ["pistol"]
-var current_weapon_id: String = "pistol"
+var owned_weapons: Array[String] = ["rifle", "pistol"]
+var current_weapon_id: String = "rifle"
 
 var can_shoot: bool = true
-var default_weapon_pos: Vector3
 var default_weapon_rot: Vector3
 var weapon_recoil_tween: Tween
 var head_bob_time: float = 0.0
@@ -151,6 +159,7 @@ func _ready() -> void:
 	
 	default_weapon_pos = weapon_holder.position
 	default_weapon_rot = weapon_holder.rotation
+	current_weapon_base_pos = default_weapon_pos
 	
 	shoot_timer.one_shot = true
 	shoot_timer.timeout.connect(func(): can_shoot = true)
@@ -158,13 +167,13 @@ func _ready() -> void:
 	respawn_timer.one_shot = true
 	respawn_timer.timeout.connect(_respawn)
 	
-	raycast.target_position = Vector3(0, 0, -320.0)
+	raycast.target_position = Vector3(0, 0, -140.0)
 	raycast.collision_mask = 3
 	raycast.collide_with_bodies = true
 	raycast.collide_with_areas = true
 	
 	# Inicializa interface de armas e dinheiro
-	_equip_weapon("pistol")
+	_equip_weapon("rifle")
 	money_changed.emit(money)
 	grenades_changed.emit(grenades_count)
 	buy_zone_status_changed.emit(is_in_buy_zone)
@@ -173,10 +182,11 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not match_active or is_dead:
 		return
 		
-	# Rotação do mouse
+	# Rotação do mouse (com sensibilidade ajustada para mira ADS)
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-		rotate_y(-event.relative.x * mouse_sensitivity)
-		head.rotate_x(-event.relative.y * mouse_sensitivity)
+		var current_sens: float = mouse_sensitivity * (0.55 if is_aiming else 1.0)
+		rotate_y(-event.relative.x * current_sens)
+		head.rotate_x(-event.relative.y * current_sens)
 		head.rotation.x = clamp(head.rotation.x, deg_to_rad(min_pitch), deg_to_rad(max_pitch))
 	
 	# Recarga manual com R
@@ -188,14 +198,21 @@ func _unhandled_input(event: InputEvent) -> void:
 		if not Input.is_action_pressed("buy_menu"):
 			_throw_grenade()
 		
-	# Troca de armas com números 1, 2, 3 (se não estiver no mercado)
+	# Troca de armas com o Scroll do Mouse ou atalhos de números (se não estiver no mercado)
 	if not Input.is_action_pressed("buy_menu"):
-		if event.is_action_pressed("slot_1") and owned_weapons.size() > 0:
-			_equip_weapon(owned_weapons[0])
-		elif event.is_action_pressed("slot_2") and owned_weapons.size() > 1:
-			_equip_weapon(owned_weapons[1])
-		elif event.is_action_pressed("slot_3") and owned_weapons.size() > 2:
-			_equip_weapon(owned_weapons[2])
+		if event is InputEventMouseButton and event.pressed:
+			if event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+				_cycle_weapon(1)
+			elif event.button_index == MOUSE_BUTTON_WHEEL_UP:
+				_cycle_weapon(-1)
+		elif event.is_action_pressed("next_weapon"):
+			_cycle_weapon(1)
+		elif event.is_action_pressed("prev_weapon"):
+			_cycle_weapon(-1)
+		else:
+			for i in range(min(5, owned_weapons.size())):
+				if event.is_action_pressed("slot_%d" % (i + 1)):
+					_equip_weapon(owned_weapons[i])
 	
 	# Alternar cursor com ESC
 	if event.is_action_pressed("ui_cancel"):
@@ -216,14 +233,15 @@ func _physics_process(delta: float) -> void:
 		
 	_handle_gravity(delta)
 	_handle_jump()
+	_handle_aim(delta)
 	_handle_movement(delta)
 	_handle_weapon_bobbing(delta)
 	_handle_shooting()
 	
 	move_and_slide()
 	
-	# 1. Base Aliada (Azul - Z > 95.0): Compras permitidas e vida recuperada para 100%
-	var in_zone: bool = (global_position.z > 95.0)
+	# 1. Base Aliada (Azul - Z > 44.0): Compras permitidas e vida recuperada para 100%
+	var in_zone: bool = (global_position.z > 44.0)
 	if in_zone != is_in_buy_zone:
 		is_in_buy_zone = in_zone
 		buy_zone_status_changed.emit(is_in_buy_zone)
@@ -233,8 +251,8 @@ func _physics_process(delta: float) -> void:
 		health_changed.emit(current_health, max_health)
 		AudioManager.play("heal", -1.0, 1.0)
 		
-	# 2. Base Inimiga (Vermelha - Z < -95.0): Bônus de Invasão de +$2,000!
-	var at_enemy_base: bool = (global_position.z < -95.0)
+	# 2. Base Inimiga (Vermelha - Z < -44.0): Bônus de Invasão de +$2,000!
+	var at_enemy_base: bool = (global_position.z < -44.0)
 	if at_enemy_base and not in_enemy_base:
 		in_enemy_base = true
 		if can_claim_enemy_base_reward:
@@ -242,7 +260,7 @@ func _physics_process(delta: float) -> void:
 			add_money(2000)
 			AudioManager.play("buy", 2.0, 1.0)
 			enemy_base_infiltrated.emit(2000)
-	elif not at_enemy_base and global_position.z > -75.0:
+	elif not at_enemy_base and global_position.z > -36.0:
 		in_enemy_base = false
 		can_claim_enemy_base_reward = true
 
@@ -254,12 +272,28 @@ func _handle_jump() -> void:
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = jump_velocity
 
+## Controla o Aim Down Sights (Mira com Botão Direito do Mouse)
+func _handle_aim(delta: float) -> void:
+	var wants_aim: bool = false
+	if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED and not Input.is_action_pressed("buy_menu") and not Input.is_action_pressed("scoreboard"):
+		wants_aim = Input.is_action_pressed("aim")
+		
+	if wants_aim != is_aiming:
+		is_aiming = wants_aim
+		aim_changed.emit(is_aiming)
+		
+	var target_fov: float = aim_fov if is_aiming else default_fov
+	camera.fov = lerp(camera.fov, target_fov, 14.0 * delta)
+	
+	var target_pos: Vector3 = ads_weapon_pos if is_aiming else default_weapon_pos
+	current_weapon_base_pos = current_weapon_base_pos.lerp(target_pos, 14.0 * delta)
+
 func _handle_movement(delta: float) -> void:
 	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 	var move_direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	
-	var is_sprinting := Input.is_action_pressed("sprint")
-	var target_speed := sprint_speed if (is_sprinting and input_dir.y < 0) else walk_speed
+	var is_sprinting := Input.is_action_pressed("sprint") and not is_aiming
+	var target_speed := sprint_speed if (is_sprinting and input_dir.y < 0) else (walk_speed * 0.72 if is_aiming else walk_speed)
 	
 	var accel_factor := acceleration if is_on_floor() else air_control
 	var decel_factor := deceleration if is_on_floor() else air_control
@@ -272,11 +306,18 @@ func _handle_movement(delta: float) -> void:
 		velocity.z = lerp(velocity.z, 0.0, decel_factor * delta)
 
 func _handle_weapon_bobbing(delta: float) -> void:
+	if weapon_recoil_tween and weapon_recoil_tween.is_running():
+		return
+	if is_reloading:
+		return
+		
 	var horizontal_vel := Vector2(velocity.x, velocity.z).length()
 	if is_on_floor() and horizontal_vel > 0.5:
+		var bob_factor: float = 0.2 if is_aiming else 1.0
 		head_bob_time += delta * horizontal_vel * 1.8
-		weapon_holder.position.y = default_weapon_pos.y + sin(head_bob_time) * 0.015
-		weapon_holder.position.x = default_weapon_pos.x + cos(head_bob_time * 0.5) * 0.01
+		weapon_holder.position.y = current_weapon_base_pos.y + sin(head_bob_time) * 0.015 * bob_factor
+		weapon_holder.position.x = current_weapon_base_pos.x + cos(head_bob_time * 0.5) * 0.01 * bob_factor
+		weapon_holder.position.z = current_weapon_base_pos.z
 		
 		# Som sutil de passos ao caminhar/correr
 		step_cycle += delta * horizontal_vel
@@ -286,7 +327,7 @@ func _handle_weapon_bobbing(delta: float) -> void:
 	else:
 		head_bob_time = 0.0
 		step_cycle = 0.0
-		weapon_holder.position = weapon_holder.position.lerp(default_weapon_pos, 8.0 * delta)
+		weapon_holder.position = weapon_holder.position.lerp(current_weapon_base_pos, 12.0 * delta)
 
 ## Gerencia o disparo (automático ou semi-automático)
 func _handle_shooting() -> void:
@@ -453,6 +494,19 @@ func _equip_weapon(weapon_id: String) -> void:
 		
 	ammo_changed.emit(w["current_clip"], w["reserve_ammo"], w["name"])
 
+## Alterna ciclicamente entre as armas possuídas pelo jogador via Scroll do Mouse
+func _cycle_weapon(direction: int) -> void:
+	if owned_weapons.size() <= 1:
+		return
+	var idx: int = owned_weapons.find(current_weapon_id)
+	if idx == -1:
+		idx = 0
+	var next_idx: int = (idx + direction) % owned_weapons.size()
+	if next_idx < 0:
+		next_idx += owned_weapons.size()
+	_equip_weapon(owned_weapons[next_idx])
+	AudioManager.play("reload", -6.0, 1.4)
+
 ## Verifica se todas as armas do jogador já estão 100% carregadas (pente e reserva)
 func is_ammo_full() -> bool:
 	for w_id in owned_weapons:
@@ -547,13 +601,19 @@ func _apply_recoil() -> void:
 	if weapon_recoil_tween and weapon_recoil_tween.is_valid():
 		weapon_recoil_tween.kill()
 		
-	weapon_recoil_tween = create_tween()
-	weapon_recoil_tween.tween_property(weapon_holder, "position:z", default_weapon_pos.z + 0.08, 0.04)
-	weapon_recoil_tween.parallel().tween_property(weapon_holder, "position:y", default_weapon_pos.y + 0.02, 0.04)
-	weapon_recoil_tween.parallel().tween_property(weapon_holder, "rotation:x", default_weapon_rot.x + deg_to_rad(4.0), 0.04)
+	var base_pos: Vector3 = ads_weapon_pos if is_aiming else default_weapon_pos
+	var base_rot: Vector3 = default_weapon_rot
+	var kick_z: float = 0.04 if is_aiming else 0.08
+	var kick_y: float = 0.01 if is_aiming else 0.02
+	var kick_rot: float = 2.0 if is_aiming else 4.0
 	
-	weapon_recoil_tween.tween_property(weapon_holder, "position", default_weapon_pos, 0.12).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	weapon_recoil_tween.parallel().tween_property(weapon_holder, "rotation", default_weapon_rot, 0.12).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	weapon_recoil_tween = create_tween()
+	weapon_recoil_tween.tween_property(weapon_holder, "position:z", base_pos.z + kick_z, 0.04)
+	weapon_recoil_tween.parallel().tween_property(weapon_holder, "position:y", base_pos.y + kick_y, 0.04)
+	weapon_recoil_tween.parallel().tween_property(weapon_holder, "rotation:x", base_rot.x + deg_to_rad(kick_rot), 0.04)
+	
+	weapon_recoil_tween.tween_property(weapon_holder, "position", base_pos, 0.12).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	weapon_recoil_tween.parallel().tween_property(weapon_holder, "rotation", base_rot, 0.12).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 func _spawn_tracer_line(start_point: Vector3, end_point: Vector3) -> void:
 	var mesh_instance := MeshInstance3D.new()

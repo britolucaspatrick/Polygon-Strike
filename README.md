@@ -28,9 +28,9 @@ Pressione e segure **CTRL** para abrir o menu do **Mercado Tático**:
 - Ao soltar **CTRL**, a tela do mercado fecha e o mouse volta a controlar a mira instantaneamente.
 
 ### 📍 Restrição de Compra na Base (Zona Segura)
-- **Regra:** Compras de armas e reabastecimento de munição só podem ser efetuadas **dentro da SUA Base** (Base Azul, ao sul do mapa, `Z > 95m`). Fora dela ou na base adversária, o mercado fica bloqueado.
-- **🚨 Invasão da Base Inimiga (Bônus de $2,000):** Ao avançar pelo mapa e invadir a Base Adversária (Base Vermelha ao norte, `Z < -95m`), você conquista uma recompensa de **+$2,000 de dinheiro**!
-- **💖 Regeneração de Vida a 100% na Base:** Ao retornar à Base Aliada (`Z > 95m`), sua barra de vida sobe imediatamente de volta para **100 HP** e permanece cheia com um efeito visual verde de cura!
+- **Regra:** Compras de armas e reabastecimento de munição só podem ser efetuadas **dentro da SUA Base** (Base Azul, ao sul do mapa, `Z > 44m`). Fora dela ou na base adversária, o mercado fica bloqueado.
+- **🚨 Invasão da Base Inimiga (Bônus de $2,000):** Ao avançar pelo mapa e invadir a Base Adversária (Base Vermelha ao norte, `Z < -44m`), você conquista uma recompensa de **+$2,000 de dinheiro**!
+- **💖 Regeneração de Vida a 100% na Base:** Ao retornar à Base Aliada (`Z > 44m`), sua barra de vida sobe imediatamente de volta para **100 HP** e permanece cheia com um efeito visual verde de cura!
 - **🚫 Bloqueio de Recompra de Munição:** Se suas armas já estiverem com 100% de capacidade (pente e reserva cheios), o botão de *Reabastecer Munição* é bloqueado, evitando gastos desnecessários de dinheiro.
 - Se suas munições acabarem no meio da arena, você receberá o aviso:  
   **`⚠️ RETORNE À BASE PARA COMPRAR MUNIÇÃO OU ARMAS!`**
@@ -79,13 +79,13 @@ Pressione e segure **CTRL** para abrir o menu do **Mercado Tático**:
 
 ---
 
-## 🗺️ Arena 4x Maior (260m x 300m = 78.000 m²)
+## 🗺️ Arena Tática (130m x 150m)
 
-A arena tática foi expandida para **4 vezes a sua área original**:
-- **Dimensões:** 260 metros de largura por 300 metros de profundidade.
-- **Cidadela Central:** Plataforma central de 60m x 60m com 4 torres de vigia elevadas (16m), 4 rampas largas e pontes elevadas de 44m conectando os flancos leste e oeste.
-- **Bases Ampliadas:** Plataformas de spawn e recarga expandidas para 108m x 48m em cada extremidade (`Z = 126m` e `Z = -126m`).
-- **Linha de Visão e Balística:** Raycasts de armas aumentados para **320m**, campo de visão dos bots ampliado para **140m** e raio de áudio espacial 3D ajustado para propagar tiros e explosões até **250m**.
+A arena tática equilibrada para combates 5v5 competitivos:
+- **Dimensões:** 130 metros de largura por 150 metros de profundidade com muralhas de 10m de altura.
+- **Complexo Central:** Plataforma central elevada com rampas de acesso e pontes conectando os flancos leste e oeste.
+- **Bases Seguras:** Plataformas demarcadas nas extremidades (`Z = 62m` e `Z = -62m`).
+- **Linha de Visão e Balística:** Raycasts de armas calibrados para engajamentos rápidos e bots com IA de busca e cobertura.
 
 ---
 
@@ -134,11 +134,13 @@ O jogo conta com uma engine de áudio em tempo real (`AudioManager`) que sinteti
 | **Correr (Sprint)** | `Shift` |
 | **Pular** | `Espaço` |
 | **Atirar (Hitscan)** | `Botão Esquerdo do Mouse` |
+| **Mirar (ADS)** | `Botão Direito do Mouse` (Segure para mirar com zoom e maior precisão) |
+| **Trocar de Arma (Scroll)** | `Roda do Mouse (Wheel Up / Down)` (Cicla por todas as suas armas) |
+| **Trocar de Arma (Slots)** | `1` a `5` (Seleção direta de slot) |
 | **Recarregar Arma** | `R` |
 | **Lançar Granada** | `F` |
 | **Mercado Tático / Loja** | `CTRL` (Segure para abrir, solte para fechar) |
 | **Tabela de Pontuação / Ranking** | `TAB` (Segure para exibir) |
-| **Trocar de Arma (Slots)** | `1` (Primária/Metralhadora), `2` (Secundária/Pistola), `3` (Faca/Padrão) |
 | **Liberar / Travar Mouse** | `ESC` |
 | **Reiniciar Partida** | `F3` |
 

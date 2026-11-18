@@ -38,6 +38,7 @@ signal start_match_requested(time_limit_sec: float, target_kills: int)
 @onready var shop_money_label: Label = %ShopMoneyLabel
 @onready var shop_status_label: Label = %ShopStatusLabel
 @onready var shop_msg_label: Label = %ShopMsgLabel
+@onready var crosshair: Control = $HUDControl/Crosshair
 
 var flash_tween: Tween
 var notification_tween: Tween
@@ -212,6 +213,58 @@ func update_buy_zone_status(in_buy_zone: bool) -> void:
 		buy_zone_hint.visible = in_buy_zone
 		if in_buy_zone:
 			buy_zone_hint.text = "🟢 BASE AZUL: Vida 100% | Segure [CTRL] para o Mercado"
+
+## Atualiza a retícula na tela quando o jogador usa a mira com botão direito (ADS)
+func update_aim_status(is_aiming: bool) -> void:
+	if not crosshair:
+		crosshair = find_child("Crosshair", true, false) as Control
+	if not crosshair:
+		return
+		
+	var dot = crosshair.get_node_or_null("Dot") as ColorRect
+	var top = crosshair.get_node_or_null("Top") as ColorRect
+	var bottom = crosshair.get_node_or_null("Bottom") as ColorRect
+	var left = crosshair.get_node_or_null("Left") as ColorRect
+	var right = crosshair.get_node_or_null("Right") as ColorRect
+	
+	if is_aiming:
+		if dot:
+			dot.color = Color(0.2, 0.95, 1.0, 1.0)
+		if top:
+			top.offset_top = -9.0
+			top.offset_bottom = -3.0
+			top.color = Color(0.2, 0.95, 1.0, 0.7)
+		if bottom:
+			bottom.offset_top = 3.0
+			bottom.offset_bottom = 9.0
+			bottom.color = Color(0.2, 0.95, 1.0, 0.7)
+		if left:
+			left.offset_left = -9.0
+			left.offset_right = -3.0
+			left.color = Color(0.2, 0.95, 1.0, 0.7)
+		if right:
+			right.offset_left = 3.0
+			right.offset_right = 9.0
+			right.color = Color(0.2, 0.95, 1.0, 0.7)
+	else:
+		if dot:
+			dot.color = Color(1.0, 1.0, 1.0, 0.95)
+		if top:
+			top.offset_top = -14.0
+			top.offset_bottom = -6.0
+			top.color = Color(1.0, 1.0, 1.0, 0.85)
+		if bottom:
+			bottom.offset_top = 6.0
+			bottom.offset_bottom = 14.0
+			bottom.color = Color(1.0, 1.0, 1.0, 0.85)
+		if left:
+			left.offset_left = -14.0
+			left.offset_right = -6.0
+			left.color = Color(1.0, 1.0, 1.0, 0.85)
+		if right:
+			right.offset_left = 6.0
+			right.offset_right = 14.0
+			right.color = Color(1.0, 1.0, 1.0, 0.85)
 
 ## Exibe ou oculta a tabela do Scoreboard
 func set_scoreboard_visible(visible_state: bool) -> void:

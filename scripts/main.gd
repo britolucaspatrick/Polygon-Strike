@@ -186,6 +186,8 @@ func _connect_player() -> void:
 			player.grenades_changed.connect(hud.update_player_grenades)
 		if player.has_signal("buy_zone_status_changed") and not player.buy_zone_status_changed.is_connected(hud.update_buy_zone_status):
 			player.buy_zone_status_changed.connect(hud.update_buy_zone_status)
+		if player.has_signal("aim_changed") and not player.aim_changed.is_connected(hud.update_aim_status):
+			player.aim_changed.connect(hud.update_aim_status)
 		if player.has_signal("enemy_base_infiltrated") and not player.enemy_base_infiltrated.is_connected(_on_player_enemy_base_infiltrated):
 			player.enemy_base_infiltrated.connect(_on_player_enemy_base_infiltrated)
 
