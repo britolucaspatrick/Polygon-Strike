@@ -12,11 +12,27 @@ Antes do tiroteio começar, o jogo abre uma tela central de **Configuração do 
    - `1 Minuto (Blitz)` | `3 Minutos` | `5 Minutos (Padrão)` | `10 Minutos` | `Ilimitado`
 2. **Meta de Abates para Vitória:**
    - `15 Abates` | `25 Abates (Padrão)` | `40 Abates` | `50 Abates`
-3. **Controle de Tempo em Jogo:**
+3. **Dificuldade da Inteligência Artificial (IA):**
+   - `Fácil (Recruta)`: Tempo de reação relaxado, maior dispersão de mira, dano moderado.
+   - `Normal (Soldado - Padrão)`: Combate equilibrado com flanqueamento e cobertura.
+   - `Veterano (Elite)`: Reflexos rápidos (0.06s), mira precisa na cabeça/peito, cadência agressiva e táticas avançadas.
+4. **Controle de Tempo em Jogo:**
    - O relógio é exibido no topo da tela (`⏱️ MM:SS`).
    - Caso o tempo se esgote, a partida é encerrada por tempo e vence quem tiver mais abates/pontos! Se as equipes empatarem, o jogo declara **Empate**.
-4. **Botão `▶️ INICIAR PARTIDA`:**
+5. **Botão `▶️ INICIAR PARTIDA`:**
    - Aplica as regras selecionadas, trava o mouse e libera os combatentes e bots para o tiroteio.
+
+---
+
+## 🤖 Inteligência Artificial Tática dos Bots (Nível 1)
+
+Os bots aliados e inimigos contam com comportamento tático autônomo e dinâmico:
+
+- **Rotas de Flanqueamento por Lanes:** O esquadrão se divide estrategicamente entre três rotas principais (*Centro pela Cidadela*, *Flanco Oeste pelas pontes* e *Flanco Leste*), realizando avanços coordenados.
+- **Recuo Estratégico com Vida Crítica (<= 35 HP):** Ao sofrerem dano pesado, os bots ativam o modo de sobrevivência, correm de volta para a base da sua equipe para restaurar 100% de HP e voltam ao combate totalmente recuperados!
+- **Uso Tático de Coberturas:** Sob tiroteio intenso ou com vida baixa (< 60 HP), os bots buscam ativamente se abrigar atrás das caixas e pilares da arena para cortar a linha de visão do atirador.
+- **Audição Tática de Passos e Tiros:** Bots que estiverem patrulhando detectam estampidos de disparos a até 45 metros ou passos de corrida acelerada próximos, virando-se imediatamente na direção do som para investigar e revidar.
+- **Economia e Evolução de Armas:** Assim como o jogador, os bots ganham dinheiro por acertos ($15) e eliminações ($300). Ao passarem pela base ou renascerem, eles compram armas superiores (*SMG*, *Rifle M4*, *LMG*) atualizando visualmente suas armas e sons de disparo.
 
 ---
 

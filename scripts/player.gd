@@ -324,6 +324,8 @@ func _handle_weapon_bobbing(delta: float) -> void:
 		if step_cycle > 2.8:
 			step_cycle = 0.0
 			AudioManager.play("footstep", -12.0, randf_range(0.92, 1.08))
+			if horizontal_vel > 7.0:
+				_alert_nearby_bots(global_position, 0.45)
 	else:
 		head_bob_time = 0.0
 		step_cycle = 0.0
@@ -382,6 +384,7 @@ func _shoot_projectile(w: Dictionary) -> void:
 		_:
 			AudioManager.play("shoot_pistol", 0.0, randf_range(0.96, 1.04))
 	
+	_alert_nearby_bots(muzzle.global_position, 1.0)
 	_apply_recoil()
 	raycast.force_raycast_update()
 	
@@ -654,6 +657,11 @@ func _spawn_hit_spark(pos: Vector3, normal: Vector3) -> void:
 	var tween := spark.create_tween()
 	tween.tween_property(spark, "scale", Vector3.ZERO, 0.12).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_IN)
 	tween.tween_callback(spark.queue_free)
+
+func _alert_nearby_bots(origin: Vector3, intensity: float) -> void:
+	for c in get_tree().get_nodes_in_group("combatants"):
+		if c != self and is_instance_valid(c) and c.has_method("hear_sound"):
+			c.hear_sound(origin, intensity)
 
 func take_damage(base_amount: int, attacker_name: String = "Inimigo", attacker_team: String = "red", hit_point: Vector3 = Vector3.ZERO) -> void:
 	if is_dead or attacker_team == team:

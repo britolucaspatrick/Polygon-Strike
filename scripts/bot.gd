@@ -5,7 +5,7 @@ signal died(killer_name: String, killer_team: String, victim_name: String, victi
 signal health_changed(new_hp: int, max_hp: int)
 signal damage_dealt_to_self(amount: int, attacker_name: String, attacker_team: String)
 
-enum State { PATROL, COMBAT, DEAD }
+enum State { PATROL, COMBAT, RETREAT, DEAD }
 
 ## Configurações do Bot
 @export var team: String = "red" # "blue" ou "red"
@@ -13,14 +13,11 @@ enum State { PATROL, COMBAT, DEAD }
 @export var max_health: int = 100
 @export var walk_speed: float = 6.5
 @export var combat_speed: float = 7.5
-@export var damage: int = 10
-@export var fire_rate: float = 0.28
+@export var damage: int = 12
+@export var fire_rate: float = 0.26
 @export var sight_range: float = 85.0
 
 ## Multiplicadores de Dano por Parte do Corpo
-# 20% Topo: Cabeça (1.52m a 1.90m) -> 2.2x
-# 50% Meio: Peito/Tronco (0.57m a 1.52m) -> 1.0x
-# 30% Base: Pernas (0.00m a 0.57m) -> 0.7x
 const MULT_HEAD: float = 2.2
 const MULT_CHEST: float = 1.0
 const MULT_LEGS: float = 0.7
@@ -29,6 +26,17 @@ var current_health: int = 100
 var current_state: State = State.PATROL
 var target_enemy: Node3D = null
 var match_active: bool = false
+
+# Dificuldade da IA e parâmetros táticos (Nível 1)
+var bot_difficulty: String = "normal"
+var reaction_time: float = 0.20
+var reaction_timer: float = 0.0
+var spread_multiplier: float = 1.0
+var bot_money: int = 500
+var current_weapon: String = "rifle"
+var current_lane: String = "center"
+var available_lanes: Array[String] = ["center", "west", "east"]
+var cover_points: Array[Vector3] = []
 
 # Timers e controles de navegação
 var can_shoot: bool = true
@@ -64,6 +72,19 @@ func _ready() -> void:
 	collision_layer = 2
 	collision_mask = 3
 	
+	# Inicializa pontos de cobertura tática da arena
+	cover_points = [
+		Vector3(-18, 1.5, 30), Vector3(18, 1.5, 30),
+		Vector3(-18, 1.5, -30), Vector3(18, 1.5, -30),
+		Vector3(-42, 1.5, 26), Vector3(-42, 1.5, -26),
+		Vector3(42, 1.5, 26), Vector3(42, 1.5, -26),
+		Vector3(0, 1.5, 50), Vector3(0, 1.5, -50),
+		Vector3(-16, 1.5, 52), Vector3(16, 1.5, 52),
+		Vector3(-16, 1.5, -52), Vector3(16, 1.5, -52)
+	]
+	
+	current_lane = available_lanes[randi() % available_lanes.size()]
+	
 	_setup_team_appearance()
 	_update_info_label()
 	
@@ -75,6 +96,35 @@ func _ready() -> void:
 	respawn_timer.timeout.connect(_respawn)
 	
 	_pick_new_patrol_destination()
+
+## Aplica os parâmetros de dificuldade da IA
+func set_difficulty(diff: String) -> void:
+	bot_difficulty = diff
+	match diff:
+		"easy":
+			reaction_time = 0.38
+			spread_multiplier = 1.6
+			damage = 8
+			fire_rate = 0.32
+			combat_speed = 6.2
+			walk_speed = 5.5
+		"hard":
+			reaction_time = 0.06
+			spread_multiplier = 0.42
+			damage = 16
+			fire_rate = 0.18
+			combat_speed = 8.5
+			walk_speed = 7.0
+		_: # normal
+			reaction_time = 0.20
+			spread_multiplier = 1.0
+			damage = 12
+			fire_rate = 0.26
+			combat_speed = 7.5
+			walk_speed = 6.5
+			
+	if shoot_timer:
+		shoot_timer.wait_time = fire_rate
 
 func _physics_process(delta: float) -> void:
 	if not match_active or current_state == State.DEAD:
@@ -90,6 +140,8 @@ func _physics_process(delta: float) -> void:
 			_process_patrol(delta)
 		State.COMBAT:
 			_process_combat(delta)
+		State.RETREAT:
+			_process_retreat(delta)
 			
 	move_and_slide()
 	
@@ -127,10 +179,11 @@ func _update_info_label() -> void:
 	if info_label:
 		info_label.text = "%s\nHP: %d" % [bot_name, current_health]
 
-## Estado de Patrulha / Movimento no mapa
+## Estado de Patrulha / Movimento no mapa por rotas táticas (Lanes)
 func _process_patrol(delta: float) -> void:
 	_scan_for_enemies()
 	if target_enemy != null:
+		reaction_timer = reaction_time
 		current_state = State.COMBAT
 		return
 		
@@ -151,23 +204,30 @@ func _process_patrol(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0, walk_speed * delta * 2)
 		velocity.z = move_toward(velocity.z, 0, walk_speed * delta * 2)
 
-## Escolhe pontos para patrulhar avançando para o complexo central e flancos
+## Escolhe pontos para patrulhar avançando pela rota tática (Centro, Flanco Oeste ou Flanco Leste)
 func _pick_new_patrol_destination() -> void:
-	repath_timer = randf_range(3.0, 5.5)
-	# Avança rumo ao campo inimigo
-	var forward_z: float = randf_range(-25.0, -50.0) if team == "blue" else randf_range(25.0, 50.0)
-	target_nav_point = Vector3(
-		randf_range(-40.0, 40.0),
-		0.5,
-		forward_z
-	)
+	repath_timer = randf_range(3.2, 5.5)
+	var forward_z: float = randf_range(-15.0, -48.0) if team == "blue" else randf_range(15.0, 48.0)
+	
+	match current_lane:
+		"west":
+			target_nav_point = Vector3(randf_range(-46.0, -38.0), 1.0, forward_z)
+		"east":
+			target_nav_point = Vector3(randf_range(38.0, 46.0), 1.0, forward_z)
+		_: # center
+			target_nav_point = Vector3(randf_range(-14.0, 14.0), 1.0, forward_z)
 
-## Estado de Combate
+## Estado de Combate Tático (Uso de Cobertura, Strafing e Disparos Inteligentes)
 func _process_combat(delta: float) -> void:
 	if not is_instance_valid(target_enemy) or not _is_target_alive(target_enemy):
 		target_enemy = null
 		current_state = State.PATROL
 		_pick_new_patrol_destination()
+		return
+		
+	# Tática de Sobrevivência: Se a vida estiver crítica (<= 35 HP), recua imediatamente para a base
+	if current_health <= 35:
+		current_state = State.RETREAT
 		return
 		
 	var dist := global_position.distance_to(target_enemy.global_position)
@@ -186,26 +246,124 @@ func _process_combat(delta: float) -> void:
 	strafe_timer -= delta
 	if strafe_timer <= 0:
 		strafe_direction = -1.0 if randf() > 0.5 else 1.0
-		strafe_timer = randf_range(0.8, 1.8)
+		strafe_timer = randf_range(0.6, 1.5)
 		
 	var move_vector := Vector3.ZERO
 	move_vector += transform.basis.x * (strafe_direction * combat_speed * 0.75)
 	
-	if dist > 26.0:
-		move_vector -= transform.basis.z * (combat_speed * 0.8) # aproxima
-	elif dist < 9.0:
-		move_vector += transform.basis.z * (combat_speed * 0.8) # recua
+	# Busca por cobertura próxima se a vida estiver abaixo de 60 HP
+	if current_health < 60:
+		var best_cover := _get_best_cover_point(target_enemy.global_position)
+		if best_cover != Vector3.ZERO and global_position.distance_to(best_cover) > 1.5:
+			var to_cover := (best_cover - global_position).normalized()
+			move_vector = move_vector.lerp(to_cover * combat_speed, 0.45)
+	else:
+		if dist > 26.0:
+			move_vector -= transform.basis.z * (combat_speed * 0.8) # aproxima
+		elif dist < 9.0:
+			move_vector += transform.basis.z * (combat_speed * 0.8) # recua
 		
 	velocity.x = move_vector.x
 	velocity.z = move_vector.z
 	
-	if _has_line_of_sight(target_enemy):
+	reaction_timer -= delta
+	if reaction_timer <= 0 and _has_line_of_sight(target_enemy):
 		_perform_shot(aim_target_pos)
-	else:
-		target_nav_point = target_enemy.global_position + Vector3(randf_range(-5, 5), 0, randf_range(-5, 5))
+	elif not _has_line_of_sight(target_enemy):
+		target_nav_point = target_enemy.global_position + Vector3(randf_range(-4, 4), 0, randf_range(-4, 4))
 		var fl_dir := (target_nav_point - global_position).normalized()
 		velocity.x = fl_dir.x * combat_speed
 		velocity.z = fl_dir.z * combat_speed
+
+## Encontra o melhor ponto de cobertura para quebrar linha de visão com o inimigo
+func _get_best_cover_point(enemy_pos: Vector3) -> Vector3:
+	var best_pt := Vector3.ZERO
+	var min_cost: float = 99999.0
+	for cp in cover_points:
+		var d_to_bot := global_position.distance_to(cp)
+		if d_to_bot < 25.0:
+			var d_to_enemy := enemy_pos.distance_to(cp)
+			# Dá preferência a coberturas próximas do bot e protegidas
+			var cost := d_to_bot - (d_to_enemy * 0.3)
+			if cost < min_cost:
+				min_cost = cost
+				best_pt = cp
+	return best_pt
+
+## Estado de Recuo Tático para a Base (Cura e Reabastecimento)
+func _process_retreat(delta: float) -> void:
+	var base_z: float = 55.0 if team == "blue" else -55.0
+	target_nav_point = Vector3(clamp(global_position.x, -20.0, 20.0), 0.5, base_z)
+	
+	var dir := (target_nav_point - global_position)
+	dir.y = 0
+	if dir.length() > 0.5:
+		var move_dir := dir.normalized()
+		velocity.x = move_dir.x * (combat_speed * 1.15)
+		velocity.z = move_dir.z * (combat_speed * 1.15)
+		var target_rot := atan2(-move_dir.x, -move_dir.z)
+		rotation.y = lerp_angle(rotation.y, target_rot, 8.0 * delta)
+	else:
+		velocity.x = 0
+		velocity.z = 0
+		
+	# Checa se entrou na zona segura da base
+	var in_base: bool = (team == "blue" and global_position.z > 44.0) or (team == "red" and global_position.z < -44.0)
+	if in_base:
+		if current_health < max_health:
+			current_health = max_health
+			_update_info_label()
+			AudioManager.play_spatial("heal", global_position, -4.0, 1.0, 50.0)
+		_try_buy_weapons()
+		current_state = State.PATROL
+		current_lane = available_lanes[randi() % available_lanes.size()]
+		_pick_new_patrol_destination()
+
+## Audição Tática: Reage a passos próximos e estampidos de disparos
+func hear_sound(sound_pos: Vector3, sound_intensity: float = 1.0) -> void:
+	if not match_active or current_state == State.DEAD:
+		return
+	if current_state == State.PATROL:
+		var dist := global_position.distance_to(sound_pos)
+		if dist < (45.0 * sound_intensity):
+			var sound_dir := (sound_pos - global_position).normalized()
+			sound_dir.y = 0
+			if sound_dir.length() > 0.1:
+				rotation.y = atan2(-sound_dir.x, -sound_dir.z)
+			target_nav_point = sound_pos + Vector3(randf_range(-2, 2), 0, randf_range(-2, 2))
+			repath_timer = 2.5
+			_scan_for_enemies()
+
+## Sistema de Compra de Armas Dinâmico da IA
+func _try_buy_weapons() -> void:
+	if bot_money >= 3000 and current_weapon != "lmg":
+		current_weapon = "lmg"
+		damage = 18 if bot_difficulty == "hard" else (14 if bot_difficulty == "normal" else 10)
+		fire_rate = 0.14
+		_update_weapon_mesh(Vector3(0.11, 0.16, 0.72), Color(0.15, 0.15, 0.18))
+	elif bot_money >= 2000 and current_weapon != "rifle" and current_weapon != "lmg":
+		current_weapon = "rifle"
+		damage = 15 if bot_difficulty == "hard" else (12 if bot_difficulty == "normal" else 8)
+		fire_rate = 0.20
+		_update_weapon_mesh(Vector3(0.09, 0.14, 0.65), Color(0.25, 0.28, 0.22))
+	elif bot_money >= 1200 and current_weapon == "pistol":
+		current_weapon = "smg"
+		damage = 11 if bot_difficulty == "hard" else (8 if bot_difficulty == "normal" else 6)
+		fire_rate = 0.11
+		_update_weapon_mesh(Vector3(0.09, 0.12, 0.52), Color(0.18, 0.25, 0.3))
+		
+	if shoot_timer:
+		shoot_timer.wait_time = fire_rate
+
+func _update_weapon_mesh(mesh_sz: Vector3, mesh_col: Color) -> void:
+	var gun_mesh_node = weapon_holder.get_node_or_null("GunMesh") as MeshInstance3D
+	if gun_mesh_node:
+		var bm := BoxMesh.new()
+		bm.size = mesh_sz
+		gun_mesh_node.mesh = bm
+		var mat := StandardMaterial3D.new()
+		mat.albedo_color = mesh_col
+		gun_mesh_node.material_override = mat
 
 ## Verifica se há visão desobstruída (sem paredes bloqueando)
 func _has_line_of_sight(target: Node3D) -> bool:
@@ -222,7 +380,7 @@ func _has_line_of_sight(target: Node3D) -> bool:
 	var result := space_state.intersect_ray(query)
 	return result.is_empty()
 
-## Executa disparo com cálculo de dispersão
+## Executa disparo com cálculo de dispersão calibrado pela dificuldade
 func _perform_shot(target_pos: Vector3) -> void:
 	if not can_shoot:
 		return
@@ -230,16 +388,21 @@ func _perform_shot(target_pos: Vector3) -> void:
 	can_shoot = false
 	shoot_timer.start(fire_rate)
 	
-	# Som espacial 3D de disparo do bot pelo mapa
-	AudioManager.play_spatial("shoot_rifle", muzzle.global_position, -2.0, randf_range(0.92, 1.08), 85.0)
+	# Som espacial 3D de disparo do bot pelo mapa baseado na arma
+	var snd = "shoot_smg" if current_weapon == "smg" else ("shoot_magnum" if current_weapon == "magnum" else "shoot_rifle")
+	AudioManager.play_spatial(snd, muzzle.global_position, -2.0, randf_range(0.92, 1.08), 85.0)
+	
+	# Alerta combatentes próximos sobre o disparo
+	_alert_nearby_bots(muzzle.global_position, 1.0)
 	
 	var from_pos: Vector3 = muzzle.global_position
 	var dist := global_position.distance_to(target_pos)
 	
+	var base_spread: float = 0.045 * spread_multiplier
 	var spread := Vector3(
-		randf_range(-0.05, 0.05),
-		randf_range(-0.05, 0.05),
-		randf_range(-0.05, 0.05)
+		randf_range(-base_spread, base_spread),
+		randf_range(-base_spread, base_spread),
+		randf_range(-base_spread, base_spread)
 	) * dist
 	
 	var final_aim_pos := target_pos + spread
@@ -258,9 +421,15 @@ func _perform_shot(target_pos: Vector3) -> void:
 		var hit_collider = result.collider
 		if hit_collider and hit_collider.has_method("take_damage"):
 			hit_collider.take_damage(damage, bot_name, team, hit_pos)
+			bot_money += 15 # Ganha dinheiro ao acertar disparos
 			
 	_spawn_tracer_line(from_pos, hit_pos)
 	_apply_weapon_recoil()
+
+func _alert_nearby_bots(origin: Vector3, intensity: float) -> void:
+	for c in get_tree().get_nodes_in_group("combatants"):
+		if c != self and is_instance_valid(c) and c.has_method("hear_sound"):
+			c.hear_sound(origin, intensity)
 
 func _apply_weapon_recoil() -> void:
 	var recoil_tween := create_tween()
@@ -322,7 +491,7 @@ func take_damage(base_amount: int, attacker_name: String = "Alguém", attacker_t
 		return
 		
 	# Calcula a altura relativa do impacto em relação à base do bot (0.0m a 1.9m)
-	var relative_y: float = 1.0 # Padrão caso não seja passado ponto
+	var relative_y: float = 1.0
 	if hit_point != Vector3.ZERO:
 		relative_y = hit_point.y - global_position.y
 		
@@ -334,12 +503,12 @@ func take_damage(base_amount: int, attacker_name: String = "Alguém", attacker_t
 	if relative_y >= 1.52:
 		multiplier = MULT_HEAD
 		hit_part_name = "HEADSHOT!"
-		number_color = Color(1.0, 0.2, 0.2) # Vermelho vivo no headshot
+		number_color = Color(1.0, 0.2, 0.2)
 		is_headshot = true
 	elif relative_y < 0.57:
 		multiplier = MULT_LEGS
 		hit_part_name = "PERNAS"
-		number_color = Color(0.8, 0.8, 0.8) # Cinza claro nas pernas
+		number_color = Color(0.8, 0.8, 0.8)
 		
 	var final_damage: int = int(round(base_amount * multiplier))
 	current_health = max(0, current_health - final_damage)
@@ -376,7 +545,6 @@ func _spawn_damage_indicator(damage_dealt: int, part_text: String, color: Color,
 	
 	get_tree().root.add_child(label)
 	
-	# Sobe e desaparece suavemente
 	var tween := label.create_tween()
 	tween.tween_property(label, "global_position:y", label.global_position.y + 0.8, 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tween.parallel().tween_property(label, "modulate:a", 0.0, 0.5).set_delay(0.2)
@@ -424,5 +592,9 @@ func _respawn() -> void:
 	info_label.modulate.a = 1.0
 	_update_info_label()
 	
+	# Verifica se compra armas melhores com o saldo acumulado
+	_try_buy_weapons()
+	
 	collision_shape.set_deferred("disabled", false)
+	current_lane = available_lanes[randi() % available_lanes.size()]
 	_pick_new_patrol_destination()

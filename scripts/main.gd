@@ -58,15 +58,18 @@ func _physics_process(delta: float) -> void:
 			_on_match_time_expired()
 
 ## Inicia a partida com os parâmetros escolhidos no painel de configuração
-func _on_start_match_requested(time_limit_sec: float, target_kills: int) -> void:
+func _on_start_match_requested(time_limit_sec: float, target_kills: int, difficulty: String = "normal") -> void:
 	target_score = target_kills
 	match_duration = time_limit_sec
 	match_time_remaining = time_limit_sec
 	match_started = true
 	
 	var time_desc = "ILIMITADO" if match_duration <= 0 else ("%d MINUTOS" % int(match_duration / 60))
+	var diff_labels = {"easy": "RECRUTA", "normal": "SOLDADO", "hard": "VETERANO"}
+	var diff_str: String = diff_labels.get(difficulty, "SOLDADO")
+	
 	if hud:
-		hud.set_goal_text("META: %d ABATES | TEMPO: %s" % [target_score, time_desc])
+		hud.set_goal_text("META: %d ABATES | %s | IA: %s" % [target_score, time_desc, diff_str])
 		hud.update_match_timer(match_time_remaining if match_duration > 0 else -1)
 		
 	if player:
@@ -76,11 +79,13 @@ func _on_start_match_requested(time_limit_sec: float, target_kills: int) -> void
 		for bot in bots_container.get_children():
 			if "match_active" in bot:
 				bot.match_active = true
+				if bot.has_method("set_difficulty"):
+					bot.set_difficulty(difficulty)
 				if bot.has_method("_pick_new_patrol_destination"):
 					bot._pick_new_patrol_destination()
 					
 	AudioManager.play("buy", 1.5, 1.1)
-	print("[CAMPEONATO] Campeonato 5v5 iniciado! Duração: %s | Meta: %d abates." % [time_desc, target_score])
+	print("[CAMPEONATO] Campeonato 5v5 iniciado! Duração: %s | Meta: %d abates | Dificuldade IA: %s" % [time_desc, target_score, diff_str])
 
 ## Fim de partida por tempo esgotado
 func _on_match_time_expired() -> void:

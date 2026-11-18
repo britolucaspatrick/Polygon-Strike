@@ -1,6 +1,6 @@
 extends CanvasLayer
 
-signal start_match_requested(time_limit_sec: float, target_kills: int)
+signal start_match_requested(time_limit_sec: float, target_kills: int, difficulty: String)
 
 ## Referências aos nós de interface
 @onready var blue_score_label: Label = $HUDControl/TopScoreBar/VBoxContainer/HBoxContainer/BlueScore
@@ -46,6 +46,7 @@ var player_ref: Node = null
 
 var selected_time_seconds: float = 300.0
 var selected_target_kills: int = 25
+var selected_difficulty: String = "normal"
 var is_in_match_setup: bool = true
 var is_game_over: bool = false
 
@@ -629,6 +630,17 @@ func _setup_config_panel_buttons() -> void:
 			btn.focus_mode = Control.FOCUS_NONE
 			btn.pressed.connect(_on_kills_button_pressed.bind(kills_buttons[btn_name], btn_name))
 			
+	var diff_buttons = {
+		"BtnDiffEasy": "easy",
+		"BtnDiffNormal": "normal",
+		"BtnDiffHard": "hard"
+	}
+	for btn_name in diff_buttons:
+		var btn = find_child(btn_name, true, false) as Button
+		if btn:
+			btn.focus_mode = Control.FOCUS_NONE
+			btn.pressed.connect(_on_diff_button_pressed.bind(diff_buttons[btn_name], btn_name))
+			
 	var btn_start = find_child("BtnStartMatch", true, false) as Button
 	if btn_start and not btn_start.pressed.is_connected(_on_start_match_clicked):
 		btn_start.focus_mode = Control.FOCUS_NONE
@@ -636,6 +648,7 @@ func _setup_config_panel_buttons() -> void:
 		
 	_highlight_selected_time("BtnTime5")
 	_highlight_selected_kills("BtnKills25")
+	_highlight_selected_diff("BtnDiffNormal")
 	_update_setup_summary()
 
 func _on_time_button_pressed(seconds: float, btn_name: String) -> void:
@@ -647,6 +660,12 @@ func _on_time_button_pressed(seconds: float, btn_name: String) -> void:
 func _on_kills_button_pressed(kills: int, btn_name: String) -> void:
 	selected_target_kills = kills
 	_highlight_selected_kills(btn_name)
+	_update_setup_summary()
+	AudioManager.play("empty_click", 0.0, 1.2)
+
+func _on_diff_button_pressed(diff: String, btn_name: String) -> void:
+	selected_difficulty = diff
+	_highlight_selected_diff(btn_name)
 	_update_setup_summary()
 	AudioManager.play("empty_click", 0.0, 1.2)
 
@@ -670,16 +689,31 @@ func _highlight_selected_kills(active_name: String) -> void:
 			else:
 				btn.modulate = Color(0.7, 0.7, 0.7)
 
+func _highlight_selected_diff(active_name: String) -> void:
+	var names = ["BtnDiffEasy", "BtnDiffNormal", "BtnDiffHard"]
+	for n in names:
+		var btn = find_child(n, true, false) as Button
+		if btn:
+			if n == active_name:
+				btn.modulate = Color(0.9, 0.4, 1.0)
+			else:
+				btn.modulate = Color(0.7, 0.7, 0.7)
+
 func _update_setup_summary() -> void:
 	if not setup_summary_label:
 		setup_summary_label = find_child("SetupSummaryLabel", true, false) as Label
 	if setup_summary_label:
 		var time_str: String = "Ilimitado" if selected_time_seconds <= 0 else ("%d Minutos" % int(selected_time_seconds / 60))
-		setup_summary_label.text = "Configuração: %s de Partida | Meta de %d Abates" % [time_str, selected_target_kills]
+		var diff_names = {
+			"easy": "Recruta (Fácil)",
+			"normal": "Soldado (Normal)",
+			"hard": "Elite (Veterano)"
+		}
+		setup_summary_label.text = "Configuração: %s | Meta: %d Abates | IA: %s" % [time_str, selected_target_kills, diff_names.get(selected_difficulty, "Soldado")]
 
 func _on_start_match_clicked() -> void:
 	is_in_match_setup = false
 	if match_setup_panel:
 		match_setup_panel.visible = false
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	start_match_requested.emit(selected_time_seconds, selected_target_kills)
+	start_match_requested.emit(selected_time_seconds, selected_target_kills, selected_difficulty)
