@@ -156,8 +156,9 @@ O jogo conta com uma engine de áudio em tempo real (`AudioManager`) que sinteti
 
 ---
 
-## 🎮 Controles do Jogo
+## 🎮 Controles do Jogo (PC e Mobile Android)
 
+### 💻 Teclado & Mouse (PC):
 | Ação | Tecla / Controle |
 | :--- | :--- |
 | **Mover** | `W`, `A`, `S`, `D` |
@@ -173,6 +174,20 @@ O jogo conta com uma engine de áudio em tempo real (`AudioManager`) que sinteti
 | **Tabela de Pontuação / Ranking** | `TAB` (Segure para exibir) |
 | **Liberar / Travar Mouse** | `ESC` |
 | **Reiniciar Partida** | `F3` |
+
+### 📱 Controles Touch na Tela (Mobile Android / Touchscreen):
+- **🕹️ Joystick Analógico Virtual (Polegar Esquerdo):** Arraste no canto inferior esquerdo para se mover em 360°. Puxar para frente além de 75% ativa **Sprint Automático**!
+- **👀 Área de Mira / Giro de Câmera (Polegar Direito):** Deslize o dedo livremente no lado direito da tela para rotacionar a visão e mirar com precisão.
+- **Botões Touch de Ação:**
+  - `🎯 TIRO`: Toque ou segure para disparar (semi ou automático).
+  - `🔍 MIRA`: Alterna o modo de mira com zoom e precisão aumentada (ADS).
+  - `🦘 PULO`: Salta obstáculos ou esquiva em combate.
+  - `🔄 RECARGA`: Recarrega o pente da arma atual.
+  - `💣 GRANADA`: Arremessa a granada fragmentária balística.
+  - `🔫 ARMA`: Cicla para a próxima arma do seu arsenal.
+  - `🛒 LOJA`: Abre/fecha o menu de compras da base com toque.
+  - `📊 TAB`: Abre/fecha a tabela de pontuação com toque.
+- **Detecção Automática & Teste no PC:** O jogo detecta automaticamente se está rodando no Android ou tela touch. No PC, você também pode ativar os controles touch na tela pelo botão no menu inicial para testar com o mouse!
 
 ---
 

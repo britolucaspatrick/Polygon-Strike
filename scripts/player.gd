@@ -27,6 +27,12 @@ var sync_target_rot_y: float = 0.0
 var sync_target_head_x: float = 0.0
 var sync_timer: float = 0.0
 
+## Controles Touch (Mobile)
+var touch_move_vector: Vector2 = Vector2.ZERO
+var touch_shoot_held: bool = false
+var touch_just_shot: bool = false
+var touch_aim_active: bool = false
+
 var match_active: bool = false
 var can_claim_enemy_base_reward: bool = true
 var in_enemy_base: bool = false
@@ -321,11 +327,13 @@ func _handle_jump() -> void:
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = jump_velocity
 
-## Controla o Aim Down Sights (Mira com Botão Direito do Mouse)
+## Controla o Aim Down Sights (Mira com Botão Direito do Mouse ou Botão Touch)
 func _handle_aim(delta: float) -> void:
 	var wants_aim: bool = false
 	if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED and not Input.is_action_pressed("buy_menu") and not Input.is_action_pressed("scoreboard"):
-		wants_aim = Input.is_action_pressed("aim")
+		wants_aim = Input.is_action_pressed("aim") or touch_aim_active
+	elif touch_aim_active:
+		wants_aim = true
 		
 	if wants_aim != is_aiming:
 		is_aiming = wants_aim
@@ -339,9 +347,13 @@ func _handle_aim(delta: float) -> void:
 
 func _handle_movement(delta: float) -> void:
 	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
+	if touch_move_vector != Vector2.ZERO:
+		input_dir = touch_move_vector
+		
 	var move_direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	
-	var is_sprinting := Input.is_action_pressed("sprint") and not is_aiming
+	# No touch, se puxar o analógico para frente mais de 75%, ativa sprint automático
+	var is_sprinting := (Input.is_action_pressed("sprint") or (touch_move_vector.y < -0.75)) and not is_aiming
 	var target_speed := sprint_speed if (is_sprinting and input_dir.y < 0) else (walk_speed * 0.72 if is_aiming else walk_speed)
 	
 	var accel_factor := acceleration if is_on_floor() else air_control
@@ -385,19 +397,36 @@ func _handle_shooting() -> void:
 	if is_reloading:
 		return
 		
-	# Se o menu de compras (CTRL) ou placar (TAB) estiver aberto,
-	# ou se o cursor do mouse estiver livre, NÃO atira de forma alguma.
-	# O clique esquerdo fica 100% exclusivo para clicar nos botões do mercado.
-	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
-		return
+	# Se o menu de compras (CTRL) ou placar (TAB) estiver aberto, NÃO atira
 	if Input.is_action_pressed("buy_menu") or Input.is_action_pressed("scoreboard"):
 		return
 		
+	# No PC sem touch, o mouse precisa estar capturado para atirar
+	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED and not touch_shoot_held and not touch_just_shot:
+		return
+		
 	var w = weapons_db[current_weapon_id]
-	var shoot_pressed: bool = Input.is_action_pressed("shoot") if w["auto_fire"] else Input.is_action_just_pressed("shoot")
+	var shoot_pressed: bool = (Input.is_action_pressed("shoot") or touch_shoot_held) if w["auto_fire"] else (Input.is_action_just_pressed("shoot") or touch_just_shot)
+	touch_just_shot = false
 	
 	if shoot_pressed and can_shoot:
 		_try_shoot()
+
+## Métodos para interface de toque (Mobile Touchscreen)
+func apply_touch_look(delta_vec: Vector2) -> void:
+	if not match_active or is_dead or is_remote:
+		return
+	var current_sens: float = mouse_sensitivity * (0.55 if is_aiming else 1.0) * 1.5
+	rotate_y(-delta_vec.x * current_sens)
+	head.rotate_x(-delta_vec.y * current_sens)
+	head.rotation.x = clamp(head.rotation.x, deg_to_rad(min_pitch), deg_to_rad(max_pitch))
+
+func trigger_touch_jump() -> void:
+	if is_on_floor() and not is_dead and match_active and not is_remote:
+		velocity.y = jump_velocity
+
+func toggle_touch_aim() -> void:
+	touch_aim_active = not touch_aim_active
 
 func _try_shoot() -> void:
 	var w = weapons_db[current_weapon_id]

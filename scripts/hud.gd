@@ -684,6 +684,12 @@ func _setup_config_panel_buttons() -> void:
 	if btn_start and not btn_start.pressed.is_connected(_on_start_match_clicked):
 		btn_start.focus_mode = Control.FOCUS_NONE
 		btn_start.pressed.connect(_on_start_match_clicked)
+
+	var btn_touch = find_child("BtnToggleTouchControls", true, false) as Button
+	if btn_touch and not btn_touch.pressed.is_connected(_on_toggle_touch_clicked):
+		btn_touch.focus_mode = Control.FOCUS_NONE
+		btn_touch.pressed.connect(_on_toggle_touch_clicked)
+		_apply_touch_mode()
 		
 	_highlight_selected_mode("BtnModeSingle")
 	_set_join_team("red")
@@ -691,6 +697,40 @@ func _setup_config_panel_buttons() -> void:
 	_highlight_selected_kills("BtnKills25")
 	_highlight_selected_diff("BtnDiffNormal")
 	_update_setup_summary()
+
+var touch_override_mode: int = 0 # 0 = Auto, 1 = Sempre Ativo, 2 = Desativado
+
+func _on_toggle_touch_clicked() -> void:
+	touch_override_mode = (touch_override_mode + 1) % 3
+	_apply_touch_mode()
+	AudioManager.play("empty_click", 0.0, 1.2)
+
+func _apply_touch_mode() -> void:
+	var touch_node = find_child("TouchControls", true, false) as Control
+	var btn_touch = find_child("BtnToggleTouchControls", true, false) as Button
+	
+	var is_mobile_device: bool = DisplayServer.is_touchscreen_available() or OS.has_feature("mobile") or OS.has_feature("android") or OS.has_feature("ios")
+	var enable_touch: bool = false
+	var status_text: String = ""
+	
+	match touch_override_mode:
+		0:
+			enable_touch = is_mobile_device
+			status_text = "Auto (%s)" % ("Ativo" if enable_touch else "Oculto no PC")
+		1:
+			enable_touch = true
+			status_text = "Ativo (Teste no PC com Mouse)"
+		2:
+			enable_touch = false
+			status_text = "Desativado"
+			
+	if touch_node:
+		touch_node.force_mobile_test = (touch_override_mode == 1)
+		touch_node.set_active(enable_touch)
+		
+	if btn_touch:
+		btn_touch.text = "📱 Controles Touch na Tela: %s" % status_text
+		btn_touch.modulate = Color(0.3, 1.0, 0.5) if enable_touch else Color(0.8, 0.8, 0.8)
 
 func _on_mode_button_pressed(mode: String, btn_name: String) -> void:
 	current_game_mode = mode
@@ -833,7 +873,10 @@ func close_match_setup() -> void:
 	is_in_match_setup = false
 	if match_setup_panel:
 		match_setup_panel.visible = false
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	if touch_override_mode == 1 or DisplayServer.is_touchscreen_available() or OS.has_feature("mobile") or OS.has_feature("android"):
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	else:
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 ## Helpers para status de rede no HUD
 func set_host_upnp_status(msg: String, is_success: bool) -> void:
