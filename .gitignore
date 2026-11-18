@@ -1,0 +1,20 @@
+# Godot 4+ ignore rules
+.godot/
+*.translation
+
+# Cache e arquivos temporários
+*.tmp
+
+# Exportações de binários
+export/
+build/
+*.exe
+*.apk
+*.aab
+*.ipa
+*.app
+
+# Sistema Operacional
+.DS_Store
+Thumbs.db
+desktop.ini

@@ -1,0 +1,25 @@
+[gd_scene load_steps=4 format=3 uid="uid://ci8w2r6u2k1mp"]
+
+[ext_resource type="Script" path="res://scripts/target.gd" id="1_target_script"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_target"]
+size = Vector3(1.2, 1.5, 1.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_target"]
+size = Vector3(1.2, 1.5, 1.2)
+
+[node name="Target" type="StaticBody3D" groups=["targets"]]
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("1_target_script")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+shape = SubResource("BoxShape3D_target")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+mesh = SubResource("BoxMesh_target")
+
+[node name="RespawnTimer" type="Timer" parent="."]
+one_shot = true

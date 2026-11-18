@@ -1,0 +1,896 @@
+[gd_scene load_steps=2 format=3 uid="uid://bvyfx1e42lqu1"]
+
+[ext_resource type="Script" path="res://scripts/hud.gd" id="1_script"]
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1_script")
+
+[node name="HUDControl" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="DamageFlash" type="ColorRect" parent="HUDControl"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 0, 0, 0)
+
+[node name="TopScoreBar" type="CenterContainer" parent="HUDControl"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -260.0
+offset_top = 16.0
+offset_right = 260.0
+offset_bottom = 80.0
+grow_horizontal = 2
+mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUDControl/TopScoreBar"]
+layout_mode = 2
+mouse_filter = 2
+alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HUDControl/TopScoreBar/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="BlueName" type="Label" parent="HUDControl/TopScoreBar/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.7, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "TIME AZUL"
+
+[node name="BlueScore" type="Label" parent="HUDControl/TopScoreBar/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.7, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 32
+text = "0"
+
+[node name="CenterScoreBox" type="VBoxContainer" parent="HUDControl/TopScoreBar/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+alignment = 1
+
+[node name="MatchTimerLabel" type="Label" parent="HUDControl/TopScoreBar/VBoxContainer/HBoxContainer/CenterScoreBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 18
+text = "⏱️ 05:00"
+horizontal_alignment = 1
+
+[node name="Separator" type="Label" parent="HUDControl/TopScoreBar/VBoxContainer/HBoxContainer/CenterScoreBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 14
+text = "VS"
+horizontal_alignment = 1
+
+[node name="RedScore" type="Label" parent="HUDControl/TopScoreBar/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.35, 0.35, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 32
+text = "0"
+
+[node name="RedName" type="Label" parent="HUDControl/TopScoreBar/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.35, 0.35, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "TIME VERMELHO"
+
+[node name="GoalLabel" type="Label" parent="HUDControl/TopScoreBar/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 0.85)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 12
+text = "PRIMEIRO A 25 ABATES VENCE O CAMPEONATO"
+horizontal_alignment = 1
+
+[node name="BottomLeft" type="MarginContainer" parent="HUDControl"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -100.0
+offset_right = 450.0
+offset_bottom = -24.0
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUDControl/BottomLeft"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="HPLabel" type="Label" parent="HUDControl/BottomLeft/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 20
+text = "VIDA: 100 / 100"
+
+[node name="HPBar" type="ProgressBar" parent="HUDControl/BottomLeft/VBoxContainer"]
+custom_minimum_size = Vector2(220, 16)
+layout_mode = 2
+mouse_filter = 2
+max_value = 100.0
+value = 100.0
+show_percentage = false
+
+[node name="HintLabel" type="Label" parent="HUDControl/BottomLeft/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 0.85)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 12
+text = "WASD: Mover | SHIFT: Correr | BOTÃO ESQ: Atirar | R: Recarregar | F: Granada | CTRL: Mercado | TAB: Placar"
+
+[node name="TopRightKillfeed" type="MarginContainer" parent="HUDControl"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -340.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 220.0
+grow_horizontal = 0
+mouse_filter = 2
+
+[node name="KillfeedVBox" type="VBoxContainer" parent="HUDControl/TopRightKillfeed"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="Crosshair" type="Control" parent="HUDControl"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Dot" type="ColorRect" parent="HUDControl/Crosshair"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 2.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 0.95)
+
+[node name="Top" type="ColorRect" parent="HUDControl/Crosshair"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -1.0
+offset_top = -14.0
+offset_right = 1.0
+offset_bottom = -6.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 0.85)
+
+[node name="Bottom" type="ColorRect" parent="HUDControl/Crosshair"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -1.0
+offset_top = 6.0
+offset_right = 1.0
+offset_bottom = 14.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 0.85)
+
+[node name="Left" type="ColorRect" parent="HUDControl/Crosshair"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -14.0
+offset_top = -1.0
+offset_right = -6.0
+offset_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 0.85)
+
+[node name="Right" type="ColorRect" parent="HUDControl/Crosshair"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 6.0
+offset_top = -1.0
+offset_right = 14.0
+offset_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 0.85)
+
+[node name="GameOverPanel" type="PanelContainer" parent="HUDControl"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -120.0
+offset_right = 250.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUDControl/GameOverPanel"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="HUDControl/GameOverPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 32
+text = "VITÓRIA!"
+horizontal_alignment = 1
+
+[node name="DetailLabel" type="Label" parent="HUDControl/GameOverPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "Placar Final: AZUL 25 x 18 VERMELHO
+
+Pressione [R] para Jogar Novamente"
+horizontal_alignment = 1
+
+[node name="ScoreboardPanel" type="PanelContainer" parent="HUDControl"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -460.0
+offset_top = -220.0
+offset_right = 460.0
+offset_bottom = 220.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="HUDControl/ScoreboardPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUDControl/ScoreboardPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="HUDControl/ScoreboardPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 22
+text = "TABELA DO CAMPEONATO 5v5"
+horizontal_alignment = 1
+
+[node name="SubHeaderLabel" type="Label" parent="HUDControl/ScoreboardPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 0.9)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 14
+text = "AZUL [ 0 ]   VS   [ 0 ] VERMELHO   •   PRIMEIRO A 25 ABATES"
+horizontal_alignment = 1
+
+[node name="ColumnsHBox" type="HBoxContainer" parent="HUDControl/ScoreboardPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+
+[node name="BlueTeamVBox" type="VBoxContainer" parent="HUDControl/ScoreboardPanel/MarginContainer/VBoxContainer/ColumnsHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="BlueTeamHeader" type="Label" parent="HUDControl/ScoreboardPanel/MarginContainer/VBoxContainer/ColumnsHBox/BlueTeamVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.35, 0.75, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 16
+text = "TIME AZUL"
+
+[node name="BlueColTitles" type="HBoxContainer" parent="HUDControl/ScoreboardPanel/MarginContainer/VBoxContainer/ColumnsHBox/BlueTeamVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="RankTitle" type="Label" parent="HUDControl/ScoreboardPanel/MarginContainer/VBoxContainer/ColumnsHBox/BlueTeamVBox/BlueColTitles"]
+custom_minimum_size = Vector2(28, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 12
+text = "#"
+
+[node name="NameTitle" type="Label" parent="HUDControl/ScoreboardPanel/MarginContainer/VBoxContainer/ColumnsHBox/BlueTeamVBox/BlueColTitles"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 12
+text = "JOGADOR"
+
+[node name="KTitle" type="Label" parent="HUDControl/ScoreboardPanel/MarginContainer/VBoxContainer/ColumnsHBox/BlueTeamVBox/BlueColTitles"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 12
+text = "K"
+horizontal_alignment = 1
+
+[node name="DTitle" type="Label" parent="HUDControl/ScoreboardPanel/MarginContainer/VBoxContainer/ColumnsHBox/BlueTeamVBox/BlueColTitles"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 12
+text = "D"
+horizontal_alignment = 1
+
+[node name="DmgTitle" type="Label" parent="HUDControl/ScoreboardPanel/MarginContainer/VBoxContainer/ColumnsHBox/BlueTeamVBox/BlueColTitles"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 12
+text = "DANO"
+horizontal_alignment = 2
+
+[node name="PtsTitle" type="Label" parent="HUDControl/ScoreboardPanel/MarginContainer/VBoxContainer/ColumnsHBox/BlueTeamVBox/BlueColTitles"]
+custom_minimum_size = Vector2(55, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 12
+text = "PTS"
+horizontal_alignment = 2
+
+[node name="BlueRowsContainer" type="VBoxContainer" parent="HUDControl/ScoreboardPanel/MarginContainer/VBoxContainer/ColumnsHBox/BlueTeamVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="VSeparator" type="VSeparator" parent="HUDControl/ScoreboardPanel/MarginContainer/VBoxContainer/ColumnsHBox"]
+layout_mode = 2
+
+[node name="RedTeamVBox" type="VBoxContainer" parent="HUDControl/ScoreboardPanel/MarginContainer/VBoxContainer/ColumnsHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="RedTeamHeader" type="Label" parent="HUDControl/ScoreboardPanel/MarginContainer/VBoxContainer/ColumnsHBox/RedTeamVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.4, 0.4, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 16
+text = "TIME VERMELHO"
+
+[node name="RedColTitles" type="HBoxContainer" parent="HUDControl/ScoreboardPanel/MarginContainer/VBoxContainer/ColumnsHBox/RedTeamVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="RankTitle" type="Label" parent="HUDControl/ScoreboardPanel/MarginContainer/VBoxContainer/ColumnsHBox/RedTeamVBox/RedColTitles"]
+custom_minimum_size = Vector2(28, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 12
+text = "#"
+
+[node name="NameTitle" type="Label" parent="HUDControl/ScoreboardPanel/MarginContainer/VBoxContainer/ColumnsHBox/RedTeamVBox/RedColTitles"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 12
+text = "JOGADOR"
+
+[node name="KTitle" type="Label" parent="HUDControl/ScoreboardPanel/MarginContainer/VBoxContainer/ColumnsHBox/RedTeamVBox/RedColTitles"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 12
+text = "K"
+horizontal_alignment = 1
+
+[node name="DTitle" type="Label" parent="HUDControl/ScoreboardPanel/MarginContainer/VBoxContainer/ColumnsHBox/RedTeamVBox/RedColTitles"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 12
+text = "D"
+horizontal_alignment = 1
+
+[node name="DmgTitle" type="Label" parent="HUDControl/ScoreboardPanel/MarginContainer/VBoxContainer/ColumnsHBox/RedTeamVBox/RedColTitles"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 12
+text = "DANO"
+horizontal_alignment = 2
+
+[node name="PtsTitle" type="Label" parent="HUDControl/ScoreboardPanel/MarginContainer/VBoxContainer/ColumnsHBox/RedTeamVBox/RedColTitles"]
+custom_minimum_size = Vector2(55, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 12
+text = "PTS"
+horizontal_alignment = 2
+
+[node name="RedRowsContainer" type="VBoxContainer" parent="HUDControl/ScoreboardPanel/MarginContainer/VBoxContainer/ColumnsHBox/RedTeamVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="FooterHint" type="Label" parent="HUDControl/ScoreboardPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 0.8)
+theme_override_font_sizes/font_size = 12
+text = "Segure [TAB] para manter aberto • Pressione [F3] para reiniciar a partida"
+horizontal_alignment = 1
+
+[node name="BottomRight" type="MarginContainer" parent="HUDControl"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -380.0
+offset_top = -140.0
+offset_right = -24.0
+offset_bottom = -24.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUDControl/BottomRight"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+alignment = 2
+
+[node name="BuyZoneHint" type="Label" parent="HUDControl/BottomRight/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.95, 0.4, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 13
+text = "🛒 BASE AZUL: Segure [CTRL] para abrir o Mercado"
+horizontal_alignment = 2
+
+[node name="WeaponNameLabel" type="Label" parent="HUDControl/BottomRight/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 16
+text = "🔫 Pistola Padrão"
+horizontal_alignment = 2
+
+[node name="AmmoLabel" type="Label" parent="HUDControl/BottomRight/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 22
+text = "MUNIÇÃO: 12 / 48"
+horizontal_alignment = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HUDControl/BottomRight/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 2
+
+[node name="GrenadeLabel" type="Label" parent="HUDControl/BottomRight/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 14
+text = "💣 GRANADAS [G]: 1 / 3"
+
+[node name="MoneyLabel" type="Label" parent="HUDControl/BottomRight/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.2, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 20
+text = "💰 $1,200"
+
+[node name="BuyMenuPanel" type="PanelContainer" parent="HUDControl"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -480.0
+offset_top = -240.0
+offset_right = 480.0
+offset_bottom = 240.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="HUDControl/BuyMenuPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 18
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUDControl/BuyMenuPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="HeaderHBox" type="HBoxContainer" parent="HUDControl/BuyMenuPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ShopTitle" type="Label" parent="HUDControl/BuyMenuPanel/MarginContainer/VBoxContainer/HeaderHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.9, 0.3, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 22
+text = "MERCADO DA BASE AZUL"
+
+[node name="ShopMoneyLabel" type="Label" parent="HUDControl/BuyMenuPanel/MarginContainer/VBoxContainer/HeaderHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.95, 0.4, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 20
+text = "SEU SALDO: $1,200"
+
+[node name="ShopStatusLabel" type="Label" parent="HUDControl/BuyMenuPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.95, 0.4, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 14
+text = "🟢 VOCÊ ESTÁ NA BASE AZUL (COMPRAS E RECARGAS LIBERADAS)"
+
+[node name="HSeparator" type="HSeparator" parent="HUDControl/BuyMenuPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ItemsHBox" type="HBoxContainer" parent="HUDControl/BuyMenuPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="PistolsVBox" type="VBoxContainer" parent="HUDControl/BuyMenuPanel/MarginContainer/VBoxContainer/ItemsHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="PistolSecTitle" type="Label" parent="HUDControl/BuyMenuPanel/MarginContainer/VBoxContainer/ItemsHBox/PistolsVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "🔫 PISTOLAS"
+
+[node name="BtnBuyMagnum" type="Button" parent="HUDControl/BuyMenuPanel/MarginContainer/VBoxContainer/ItemsHBox/PistolsVBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 48)
+text = "Magnum .50 ($500)
+Dano 50 | 7 Balas"
+
+[node name="MachineGunsVBox" type="VBoxContainer" parent="HUDControl/BuyMenuPanel/MarginContainer/VBoxContainer/ItemsHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="MgSecTitle" type="Label" parent="HUDControl/BuyMenuPanel/MarginContainer/VBoxContainer/ItemsHBox/MachineGunsVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "⚡ METRALHADORAS"
+
+[node name="BtnBuySMG" type="Button" parent="HUDControl/BuyMenuPanel/MarginContainer/VBoxContainer/ItemsHBox/MachineGunsVBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 44)
+text = "Submetralhadora SMG ($1,200)
+Automática | 30 Balas"
+
+[node name="BtnBuyRifle" type="Button" parent="HUDControl/BuyMenuPanel/MarginContainer/VBoxContainer/ItemsHBox/MachineGunsVBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 44)
+text = "Rifle de Assalto M4 ($2,000)
+Potente & Preciso | 30 Balas"
+
+[node name="BtnBuyLMG" type="Button" parent="HUDControl/BuyMenuPanel/MarginContainer/VBoxContainer/ItemsHBox/MachineGunsVBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 44)
+text = "Metralhadora Pesada ($3,000)
+Devastadora | 60 Balas"
+
+[node name="SuppliesVBox" type="VBoxContainer" parent="HUDControl/BuyMenuPanel/MarginContainer/VBoxContainer/ItemsHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="SupSecTitle" type="Label" parent="HUDControl/BuyMenuPanel/MarginContainer/VBoxContainer/ItemsHBox/SuppliesVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "💣 SUPRIMENTOS"
+
+[node name="BtnBuyGrenade" type="Button" parent="HUDControl/BuyMenuPanel/MarginContainer/VBoxContainer/ItemsHBox/SuppliesVBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 44)
+text = "Granada Fragmentária ($300)
+Dano em Área (Tecla F)"
+
+[node name="BtnBuyAmmo" type="Button" parent="HUDControl/BuyMenuPanel/MarginContainer/VBoxContainer/ItemsHBox/SuppliesVBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 44)
+text = "Reabastecer Munição ($200)
+Enche Todas as Armas"
+
+[node name="ShopMsgLabel" type="Label" parent="HUDControl/BuyMenuPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 1
+
+[node name="ShopFooter" type="Label" parent="HUDControl/BuyMenuPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 0.8)
+theme_override_font_sizes/font_size = 12
+text = "Solte [CTRL] para fechar o Mercado e voltar ao combate"
+horizontal_alignment = 1
+
+[node name="EventNotificationLabel" type="Label" parent="HUDControl"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -140.0
+offset_right = 350.0
+offset_bottom = -90.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 24
+text = "🚨 INVASÃO DE BASE INIMIGA! BÔNUS: +$2,000"
+horizontal_alignment = 1
+
+[node name="MatchSetupPanel" type="PanelContainer" parent="HUDControl"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -340.0
+offset_top = -240.0
+offset_right = 340.0
+offset_bottom = 240.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="HUDControl/MatchSetupPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUDControl/MatchSetupPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="SetupTitle" type="Label" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 24
+text = "🏆 CONFIGURAÇÃO DO CAMPEONATO 5v5"
+horizontal_alignment = 1
+
+[node name="SetupSubtitle" type="Label" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 0.85)
+theme_override_font_sizes/font_size = 13
+text = "Escolha a duração e a meta de abates antes de iniciar o combate!"
+horizontal_alignment = 1
+
+[node name="TimeTitle" type="Label" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.8, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 15
+text = "⏱️ DURAÇÃO DA PARTIDA (TEMPO)"
+
+[node name="TimeHBox" type="HBoxContainer" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="BtnTime1" type="Button" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/TimeHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 42)
+text = "1 Minuto"
+
+[node name="BtnTime3" type="Button" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/TimeHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 42)
+text = "3 Minutos"
+
+[node name="BtnTime5" type="Button" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/TimeHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 42)
+text = "5 Minutos"
+
+[node name="BtnTime10" type="Button" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/TimeHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 42)
+text = "10 Minutos"
+
+[node name="BtnTimeInf" type="Button" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/TimeHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 42)
+text = "Ilimitado"
+
+[node name="KillsTitle" type="Label" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.5, 0.4, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 15
+text = "🎯 META DE ABATES PARA VITÓRIA"
+
+[node name="KillsHBox" type="HBoxContainer" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="BtnKills15" type="Button" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/KillsHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 42)
+text = "15 Abates"
+
+[node name="BtnKills25" type="Button" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/KillsHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 42)
+text = "25 Abates"
+
+[node name="BtnKills40" type="Button" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/KillsHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 42)
+text = "40 Abates"
+
+[node name="BtnKills50" type="Button" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/KillsHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 42)
+text = "50 Abates"
+
+[node name="SetupSummaryLabel" type="Label" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.95, 0.9, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 14
+text = "Regras: 5 Minutos de Partida | Meta de 25 Abates"
+horizontal_alignment = 1
+
+[node name="BtnStartMatch" type="Button" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 52)
+theme_override_colors/font_color = Color(0.1, 1, 0.3, 1)
+theme_override_font_sizes/font_size = 20
+text = "▶️ INICIAR PARTIDA"

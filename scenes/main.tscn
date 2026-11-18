@@ -1,0 +1,322 @@
+[gd_scene load_steps=18 format=3 uid="uid://b0yqv78u31l2c"]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main_script"]
+[ext_resource type="PackedScene" uid="uid://cqlfv52f8w8e0" path="res://scenes/player.tscn" id="2_player_scene"]
+[ext_resource type="PackedScene" uid="uid://cx6i87g1h3vlp" path="res://scenes/bot.tscn" id="3_bot_scene"]
+[ext_resource type="PackedScene" uid="uid://bvyfx1e42lqu1" path="res://scenes/hud.tscn" id="4_hud_scene"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_main"]
+sky_top_color = Color(0.3, 0.55, 0.9, 1)
+sky_horizon_color = Color(0.68, 0.78, 0.88, 1)
+ground_bottom_color = Color(0.14, 0.17, 0.2, 1)
+ground_horizon_color = Color(0.55, 0.6, 0.65, 1)
+
+[sub_resource type="Sky" id="Sky_main"]
+sky_material = SubResource("ProceduralSkyMaterial_main")
+
+[sub_resource type="Environment" id="Environment_main"]
+background_mode = 2
+sky = SubResource("Sky_main")
+ambient_light_source = 3
+ambient_light_sky_contribution = 0.5
+tonemap_mode = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
+albedo_color = Color(0.2, 0.22, 0.25, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wall"]
+albedo_color = Color(0.35, 0.38, 0.44, 1)
+roughness = 0.65
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_blue_zone"]
+albedo_color = Color(0.15, 0.35, 0.75, 1)
+roughness = 0.6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_red_zone"]
+albedo_color = Color(0.75, 0.18, 0.18, 1)
+roughness = 0.6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mid_platform"]
+albedo_color = Color(0.26, 0.3, 0.38, 1)
+roughness = 0.6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pillar"]
+albedo_color = Color(0.16, 0.45, 0.52, 1)
+roughness = 0.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_crate_orange"]
+albedo_color = Color(0.85, 0.45, 0.15, 1)
+roughness = 0.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_crate_yellow"]
+albedo_color = Color(0.8, 0.65, 0.2, 1)
+roughness = 0.5
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_main_script")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_main")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, 0.612372, -0.612372, 0, 35, 0)
+light_color = Color(1, 0.98, 0.92, 1)
+light_energy = 1.15
+shadow_enabled = true
+
+[node name="Map" type="Node3D" parent="."]
+
+[node name="Floor" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+use_collision = true
+size = Vector3(130, 1, 150)
+material = SubResource("StandardMaterial3D_floor")
+
+[node name="WallNorth" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, -75)
+use_collision = true
+size = Vector3(130, 10, 1)
+material = SubResource("StandardMaterial3D_wall")
+
+[node name="WallSouth" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 75)
+use_collision = true
+size = Vector3(130, 10, 1)
+material = SubResource("StandardMaterial3D_wall")
+
+[node name="WallEast" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65, 5, 0)
+use_collision = true
+size = Vector3(1, 10, 150)
+material = SubResource("StandardMaterial3D_wall")
+
+[node name="WallWest" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -65, 5, 0)
+use_collision = true
+size = Vector3(1, 10, 150)
+material = SubResource("StandardMaterial3D_wall")
+
+[node name="BaseFloorBlue" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 62)
+size = Vector3(54, 0.1, 24)
+material = SubResource("StandardMaterial3D_blue_zone")
+
+[node name="BaseFloorRed" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -62)
+size = Vector3(54, 0.1, 24)
+material = SubResource("StandardMaterial3D_red_zone")
+
+[node name="BlueBaseCoverCenter" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 50)
+use_collision = true
+size = Vector3(6, 3, 3)
+material = SubResource("StandardMaterial3D_crate_orange")
+
+[node name="BlueBaseCoverLeft" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 1.5, 52)
+use_collision = true
+size = Vector3(6, 3, 3)
+material = SubResource("StandardMaterial3D_crate_orange")
+
+[node name="BlueBaseCoverRight" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 1.5, 52)
+use_collision = true
+size = Vector3(6, 3, 3)
+material = SubResource("StandardMaterial3D_crate_orange")
+
+[node name="RedBaseCoverCenter" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -50)
+use_collision = true
+size = Vector3(6, 3, 3)
+material = SubResource("StandardMaterial3D_crate_orange")
+
+[node name="RedBaseCoverLeft" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 1.5, -52)
+use_collision = true
+size = Vector3(6, 3, 3)
+material = SubResource("StandardMaterial3D_crate_orange")
+
+[node name="RedBaseCoverRight" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 1.5, -52)
+use_collision = true
+size = Vector3(6, 3, 3)
+material = SubResource("StandardMaterial3D_crate_orange")
+
+[node name="CenterPlatform" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+use_collision = true
+size = Vector3(30, 3, 30)
+material = SubResource("StandardMaterial3D_mid_platform")
+
+[node name="RampSouth1" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 17)
+use_collision = true
+size = Vector3(10, 1, 4)
+material = SubResource("StandardMaterial3D_mid_platform")
+
+[node name="RampSouth2" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 15)
+use_collision = true
+size = Vector3(10, 2, 4)
+material = SubResource("StandardMaterial3D_mid_platform")
+
+[node name="RampNorth1" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -17)
+use_collision = true
+size = Vector3(10, 1, 4)
+material = SubResource("StandardMaterial3D_mid_platform")
+
+[node name="RampNorth2" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, -15)
+use_collision = true
+size = Vector3(10, 2, 4)
+material = SubResource("StandardMaterial3D_mid_platform")
+
+[node name="PillarTower1" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 6, -11)
+use_collision = true
+size = Vector3(3.5, 10, 3.5)
+material = SubResource("StandardMaterial3D_pillar")
+
+[node name="PillarTower2" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 6, -11)
+use_collision = true
+size = Vector3(3.5, 10, 3.5)
+material = SubResource("StandardMaterial3D_pillar")
+
+[node name="PillarTower3" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 6, 11)
+use_collision = true
+size = Vector3(3.5, 10, 3.5)
+material = SubResource("StandardMaterial3D_pillar")
+
+[node name="PillarTower4" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 6, 11)
+use_collision = true
+size = Vector3(3.5, 10, 3.5)
+material = SubResource("StandardMaterial3D_pillar")
+
+[node name="MidBridgeWest" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23, 2.7, 0)
+use_collision = true
+size = Vector3(16, 0.6, 6)
+material = SubResource("StandardMaterial3D_mid_platform")
+
+[node name="MidBridgeEast" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 2.7, 0)
+use_collision = true
+size = Vector3(16, 0.6, 6)
+material = SubResource("StandardMaterial3D_mid_platform")
+
+[node name="FlankWestPlatform" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42, 1.5, 0)
+use_collision = true
+size = Vector3(14, 3, 14)
+material = SubResource("StandardMaterial3D_crate_yellow")
+
+[node name="FlankWestCoverSouth" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42, 1.5, 26)
+use_collision = true
+size = Vector3(6, 3, 10)
+material = SubResource("StandardMaterial3D_crate_orange")
+
+[node name="FlankWestCoverNorth" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42, 1.5, -26)
+use_collision = true
+size = Vector3(6, 3, 10)
+material = SubResource("StandardMaterial3D_crate_orange")
+
+[node name="FlankEastPlatform" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42, 1.5, 0)
+use_collision = true
+size = Vector3(14, 3, 14)
+material = SubResource("StandardMaterial3D_crate_yellow")
+
+[node name="FlankEastCoverSouth" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42, 1.5, 26)
+use_collision = true
+size = Vector3(6, 3, 10)
+material = SubResource("StandardMaterial3D_crate_orange")
+
+[node name="FlankEastCoverNorth" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42, 1.5, -26)
+use_collision = true
+size = Vector3(6, 3, 10)
+material = SubResource("StandardMaterial3D_crate_orange")
+
+[node name="MidApproachSouth1" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 1.5, 30)
+use_collision = true
+size = Vector3(5, 3, 4)
+material = SubResource("StandardMaterial3D_crate_yellow")
+
+[node name="MidApproachSouth2" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 1.5, 30)
+use_collision = true
+size = Vector3(5, 3, 4)
+material = SubResource("StandardMaterial3D_crate_yellow")
+
+[node name="MidApproachNorth1" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 1.5, -30)
+use_collision = true
+size = Vector3(5, 3, 4)
+material = SubResource("StandardMaterial3D_crate_yellow")
+
+[node name="MidApproachNorth2" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 1.5, -30)
+use_collision = true
+size = Vector3(5, 3, 4)
+material = SubResource("StandardMaterial3D_crate_yellow")
+
+[node name="Player" parent="." instance=ExtResource("2_player_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 64)
+
+[node name="Bots" type="Node3D" parent="."]
+
+[node name="Ally1" parent="Bots" instance=ExtResource("3_bot_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0.5, 62)
+team = "blue"
+bot_name = "Aliado 1"
+
+[node name="Ally2" parent="Bots" instance=ExtResource("3_bot_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.5, 62)
+team = "blue"
+bot_name = "Aliado 2"
+
+[node name="Ally3" parent="Bots" instance=ExtResource("3_bot_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0.5, 65)
+team = "blue"
+bot_name = "Aliado 3"
+
+[node name="Ally4" parent="Bots" instance=ExtResource("3_bot_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 0.5, 65)
+team = "blue"
+bot_name = "Aliado 4"
+
+[node name="Enemy1" parent="Bots" instance=ExtResource("3_bot_scene")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0.5, -64)
+team = "red"
+bot_name = "Inimigo 1"
+
+[node name="Enemy2" parent="Bots" instance=ExtResource("3_bot_scene")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -8, 0.5, -62)
+team = "red"
+bot_name = "Inimigo 2"
+
+[node name="Enemy3" parent="Bots" instance=ExtResource("3_bot_scene")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 8, 0.5, -62)
+team = "red"
+bot_name = "Inimigo 3"
+
+[node name="Enemy4" parent="Bots" instance=ExtResource("3_bot_scene")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -18, 0.5, -65)
+team = "red"
+bot_name = "Inimigo 4"
+
+[node name="Enemy5" parent="Bots" instance=ExtResource("3_bot_scene")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 18, 0.5, -65)
+team = "red"
+bot_name = "Inimigo 5"
+
+[node name="HUD" parent="." instance=ExtResource("4_hud_scene")]

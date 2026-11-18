@@ -1,0 +1,75 @@
+[gd_scene load_steps=8 format=3 uid="uid://cx6i87g1h3vlp"]
+
+[ext_resource type="Script" path="res://scripts/bot.gd" id="1_bot_script"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_bot"]
+radius = 0.4
+height = 1.9
+
+[sub_resource type="BoxMesh" id="BoxMesh_legs"]
+size = Vector3(0.65, 0.57, 0.45)
+
+[sub_resource type="BoxMesh" id="BoxMesh_chest"]
+size = Vector3(0.75, 0.95, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_head"]
+size = Vector3(0.44, 0.38, 0.44)
+
+[sub_resource type="BoxMesh" id="BoxMesh_visor"]
+size = Vector3(0.36, 0.12, 0.15)
+
+[sub_resource type="BoxMesh" id="BoxMesh_gun"]
+size = Vector3(0.08, 0.1, 0.4)
+
+[node name="Bot" type="CharacterBody3D" groups=["bots", "combatants"]]
+collision_layer = 2
+collision_mask = 3
+script = ExtResource("1_bot_script")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
+shape = SubResource("CapsuleShape3D_bot")
+
+[node name="VisualModel" type="Node3D" parent="."]
+
+[node name="LegsMesh" type="MeshInstance3D" parent="VisualModel"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.285, 0)
+mesh = SubResource("BoxMesh_legs")
+
+[node name="ChestMesh" type="MeshInstance3D" parent="VisualModel"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.045, 0)
+mesh = SubResource("BoxMesh_chest")
+
+[node name="HeadMesh" type="MeshInstance3D" parent="VisualModel"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.71, 0)
+mesh = SubResource("BoxMesh_head")
+
+[node name="VisorMesh" type="MeshInstance3D" parent="VisualModel"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.73, -0.22)
+mesh = SubResource("BoxMesh_visor")
+
+[node name="Head" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.71, 0)
+
+[node name="WeaponHolder" type="Node3D" parent="Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, -0.25, -0.3)
+
+[node name="GunMesh" type="MeshInstance3D" parent="Head/WeaponHolder"]
+mesh = SubResource("BoxMesh_gun")
+
+[node name="Muzzle" type="Marker3D" parent="Head/WeaponHolder"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.22)
+
+[node name="InfoLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, 0)
+billboard = 1
+text = "Bot
+HP: 100"
+font_size = 28
+outline_size = 6
+
+[node name="ShootTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="RespawnTimer" type="Timer" parent="."]
+one_shot = true
