@@ -18,6 +18,7 @@ enum State { PATROL, COMBAT, RETREAT, DEAD }
 @export var sight_range: float = 85.0
 
 ## Multiplicadores de Dano por Parte do Corpo
+const WeaponBuilder = preload("res://scripts/weapon_builder.gd")
 const MULT_HEAD: float = 2.2
 const MULT_CHEST: float = 1.0
 const MULT_LEGS: float = 0.7
@@ -87,6 +88,7 @@ func _ready() -> void:
 	
 	_setup_team_appearance()
 	_update_info_label()
+	_update_weapon_mesh()
 	
 	shoot_timer.wait_time = fire_rate
 	shoot_timer.one_shot = true
@@ -340,30 +342,28 @@ func _try_buy_weapons() -> void:
 		current_weapon = "lmg"
 		damage = 18 if bot_difficulty == "hard" else (14 if bot_difficulty == "normal" else 10)
 		fire_rate = 0.14
-		_update_weapon_mesh(Vector3(0.11, 0.16, 0.72), Color(0.15, 0.15, 0.18))
+		_update_weapon_mesh()
 	elif bot_money >= 2000 and current_weapon != "rifle" and current_weapon != "lmg":
 		current_weapon = "rifle"
 		damage = 15 if bot_difficulty == "hard" else (12 if bot_difficulty == "normal" else 8)
 		fire_rate = 0.20
-		_update_weapon_mesh(Vector3(0.09, 0.14, 0.65), Color(0.25, 0.28, 0.22))
-	elif bot_money >= 1200 and current_weapon == "pistol":
+		_update_weapon_mesh()
+	elif bot_money >= 1200 and current_weapon != "smg" and current_weapon != "rifle" and current_weapon != "lmg":
 		current_weapon = "smg"
 		damage = 11 if bot_difficulty == "hard" else (8 if bot_difficulty == "normal" else 6)
 		fire_rate = 0.11
-		_update_weapon_mesh(Vector3(0.09, 0.12, 0.52), Color(0.18, 0.25, 0.3))
+		_update_weapon_mesh()
+	elif bot_money >= 500 and current_weapon == "pistol":
+		current_weapon = "magnum"
+		damage = 24 if bot_difficulty == "hard" else (18 if bot_difficulty == "normal" else 12)
+		fire_rate = 0.38
+		_update_weapon_mesh()
 		
 	if shoot_timer:
 		shoot_timer.wait_time = fire_rate
 
-func _update_weapon_mesh(mesh_sz: Vector3, mesh_col: Color) -> void:
-	var gun_mesh_node = weapon_holder.get_node_or_null("GunMesh") as MeshInstance3D
-	if gun_mesh_node:
-		var bm := BoxMesh.new()
-		bm.size = mesh_sz
-		gun_mesh_node.mesh = bm
-		var mat := StandardMaterial3D.new()
-		mat.albedo_color = mesh_col
-		gun_mesh_node.material_override = mat
+func _update_weapon_mesh() -> void:
+	WeaponBuilder.apply_to_weapon_holder(weapon_holder, current_weapon)
 
 ## Verifica se há visão desobstruída (sem paredes bloqueando)
 func _has_line_of_sight(target: Node3D) -> bool:

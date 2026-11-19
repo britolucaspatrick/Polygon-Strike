@@ -14,6 +14,8 @@ signal enemy_base_infiltrated(bonus_amount: int)
 signal aim_changed(is_aiming: bool)
 
 ## Configurações de Time e Identificação
+const WeaponBuilder = preload("res://scripts/weapon_builder.gd")
+
 @export var team: String = "blue"
 @export var character_name: String = "Você"
 @export var max_health: int = 100
@@ -568,17 +570,11 @@ func _equip_weapon(weapon_id: String) -> void:
 	is_reloading = false
 	can_shoot = true
 	
-	# Ajusta modelo 3D da arma
-	if gun_mesh:
-		var box_mesh := BoxMesh.new()
-		box_mesh.size = w["mesh_size"]
-		gun_mesh.mesh = box_mesh
-		
-		var mat := StandardMaterial3D.new()
-		mat.albedo_color = w["mesh_color"]
-		mat.metallic = 0.7
-		mat.roughness = 0.35
-		gun_mesh.material_override = mat
+	# Aplica modelo 3D procedural detalhado e posições táticas da arma
+	default_weapon_pos = WeaponBuilder.get_default_pos(weapon_id)
+	ads_weapon_pos = WeaponBuilder.get_ads_pos(weapon_id)
+	current_weapon_base_pos = ads_weapon_pos if is_aiming else default_weapon_pos
+	WeaponBuilder.apply_to_weapon_holder(weapon_holder, weapon_id)
 		
 	ammo_changed.emit(w["current_clip"], w["reserve_ammo"], w["name"])
 
@@ -821,6 +817,8 @@ func rpc_notify_death(killer_name: String, killer_team: String, is_headshot: boo
 
 @rpc("any_peer")
 func rpc_shoot_effect(from_pos: Vector3, to_pos: Vector3, weapon_id: String) -> void:
+	if is_remote and current_weapon_id != weapon_id:
+		_equip_weapon(weapon_id)
 	_spawn_tracer_line(from_pos, to_pos)
 	match weapon_id:
 		"magnum":
