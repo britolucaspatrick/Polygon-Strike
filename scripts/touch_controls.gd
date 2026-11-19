@@ -40,15 +40,21 @@ var editor_size_label: Label = null
 
 const SAVE_PATH: String = "user://touch_layout.json"
 
+## Verifica de forma determinística se a plataforma é smartphone/mobile
+static func is_mobile_platform() -> bool:
+	if OS.has_feature("windows") or OS.has_feature("macos") or OS.has_feature("linux") or OS.has_feature("pc"):
+		return false
+	return OS.has_feature("android") or OS.has_feature("ios") or OS.has_feature("mobile")
+
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_PASS
 	
 	_init_default_buttons()
 	_create_editor_toolbar()
 	
-	# Detecta se está em dispositivo mobile com touchscreen nativo
-	var is_mobile_device: bool = DisplayServer.is_touchscreen_available() or OS.has_feature("mobile") or OS.has_feature("android") or OS.has_feature("ios")
-	set_active(is_mobile_device or force_mobile_test)
+	# Detecta se está em dispositivo mobile (Android/iOS)
+	var is_mobile: bool = is_mobile_platform()
+	set_active(is_mobile or force_mobile_test)
 	
 	get_viewport().size_changed.connect(_on_viewport_size_changed)
 	_apply_layout()
@@ -57,6 +63,14 @@ func _on_viewport_size_changed() -> void:
 	_apply_layout()
 
 func set_active(active: bool) -> void:
+	# No Windows/PC, nunca ativa nem mostra controles touch exceto em modo de edição ou teste forçado
+	if not is_mobile_platform() and not force_mobile_test and not is_editing_layout:
+		is_active = false
+		visible = false
+		set_process_input(false)
+		queue_redraw()
+		return
+
 	is_active = active
 	visible = is_active or is_editing_layout
 	set_process_input(is_active or is_editing_layout)
@@ -413,9 +427,9 @@ func close_layout_editor() -> void:
 	if editor_panel:
 		editor_panel.visible = false
 	
-	# Restaura visibilidade normal conforme detecção mobile
-	var is_mobile_device: bool = DisplayServer.is_touchscreen_available() or OS.has_feature("mobile") or OS.has_feature("android") or OS.has_feature("ios")
-	set_active(is_mobile_device or force_mobile_test)
+	# Restaura visibilidade normal conforme detecção de plataforma mobile
+	var is_mobile: bool = is_mobile_platform()
+	set_active(is_mobile or force_mobile_test)
 	
 	queue_redraw()
 	editor_closed.emit()

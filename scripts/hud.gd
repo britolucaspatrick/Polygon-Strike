@@ -685,16 +685,25 @@ func _setup_config_panel_buttons() -> void:
 		btn_start.focus_mode = Control.FOCUS_NONE
 		btn_start.pressed.connect(_on_start_match_clicked)
 
+	var is_mobile: bool = TouchControls.is_mobile_platform()
+
+	var touch_toggle_box = find_child("TouchToggleHBox", true, false) as Control
+	if touch_toggle_box:
+		touch_toggle_box.visible = is_mobile
+
 	var btn_touch = find_child("BtnToggleTouchControls", true, false) as Button
 	if btn_touch and not btn_touch.pressed.is_connected(_on_toggle_touch_clicked):
 		btn_touch.focus_mode = Control.FOCUS_NONE
 		btn_touch.pressed.connect(_on_toggle_touch_clicked)
-		_apply_touch_mode()
 
 	var btn_custom_hud = find_child("BtnCustomizeTouchLayout", true, false) as Button
-	if btn_custom_hud and not btn_custom_hud.pressed.is_connected(_on_customize_touch_layout_clicked):
-		btn_custom_hud.focus_mode = Control.FOCUS_NONE
-		btn_custom_hud.pressed.connect(_on_customize_touch_layout_clicked)
+	if btn_custom_hud:
+		btn_custom_hud.visible = is_mobile
+		if not btn_custom_hud.pressed.is_connected(_on_customize_touch_layout_clicked):
+			btn_custom_hud.focus_mode = Control.FOCUS_NONE
+			btn_custom_hud.pressed.connect(_on_customize_touch_layout_clicked)
+		
+	_apply_touch_mode()
 		
 	_highlight_selected_mode("BtnModeSingle")
 	_set_join_team("red")
@@ -713,14 +722,23 @@ func _on_toggle_touch_clicked() -> void:
 func _apply_touch_mode() -> void:
 	var touch_node = find_child("TouchControls", true, false) as Control
 	var btn_touch = find_child("BtnToggleTouchControls", true, false) as Button
+	var is_mobile: bool = TouchControls.is_mobile_platform()
 	
-	var is_mobile_device: bool = DisplayServer.is_touchscreen_available() or OS.has_feature("mobile") or OS.has_feature("android") or OS.has_feature("ios")
+	if not is_mobile and touch_override_mode != 1:
+		if touch_node:
+			touch_node.force_mobile_test = false
+			touch_node.set_active(false)
+		if btn_touch:
+			btn_touch.text = "📱 Controles Touch: Ocultos no Windows"
+			btn_touch.modulate = Color(0.8, 0.8, 0.8)
+		return
+	
 	var enable_touch: bool = false
 	var status_text: String = ""
 	
 	match touch_override_mode:
 		0:
-			enable_touch = is_mobile_device
+			enable_touch = is_mobile
 			status_text = "Auto (%s)" % ("Ativo" if enable_touch else "Oculto no PC")
 		1:
 			enable_touch = true
@@ -891,10 +909,12 @@ func close_match_setup() -> void:
 	is_in_match_setup = false
 	if match_setup_panel:
 		match_setup_panel.visible = false
-	if touch_override_mode == 1 or DisplayServer.is_touchscreen_available() or OS.has_feature("mobile") or OS.has_feature("android"):
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	else:
+	
+	var is_mobile: bool = TouchControls.is_mobile_platform()
+	if not is_mobile and touch_override_mode != 1:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	else:
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 ## Helpers para status de rede no HUD
 func set_host_upnp_status(msg: String, is_success: bool) -> void:
