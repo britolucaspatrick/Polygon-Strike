@@ -32,6 +32,9 @@ var available_red_names: Array[String] = [
 ]
 
 func _ready() -> void:
+	# Força orientação em modo Paisagem (Landscape) para dispositivos móveis
+	DisplayServer.screen_set_orientation(DisplayServer.SCREEN_LANDSCAPE)
+	
 	InputSetup.ensure_inputs()
 	
 	_setup_network_manager()
