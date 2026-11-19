@@ -17,6 +17,16 @@ var match_duration: float = 300.0 # 5 min por padrão (0 = ilimitado)
 var match_time_remaining: float = 300.0
 
 const NetworkManagerScript = preload("res://scripts/network_manager.gd")
+const MapRiverVillageScene = preload("res://scenes/map_river_village.tscn")
+const MapIndustrialScene = preload("res://scenes/map_industrial.tscn")
+
+const MAP_SCENES: Dictionary = {
+	"river_village": MapRiverVillageScene,
+	"industrial": MapIndustrialScene
+}
+
+var current_map_id: String = "river_village"
+var current_map_node: Node3D = null
 
 # Dicionário com estatísticas individuais em tempo real
 var combatant_stats: Dictionary = {}
@@ -44,9 +54,15 @@ func _ready() -> void:
 	_connect_player()
 	_connect_bots()
 	
+	# Define nó de mapa inicial e calibra pontos de cobertura tática
+	current_map_node = get_node_or_null("Map")
+	_update_bot_cover_points_for_map("river_village")
+	
 	if hud:
 		hud.update_scores(blue_score, red_score)
 		hud.update_match_timer(match_time_remaining)
+		if hud.has_signal("map_selection_changed") and not hud.map_selection_changed.is_connected(load_map):
+			hud.map_selection_changed.connect(load_map)
 		if not hud.start_match_requested.is_connected(_on_start_match_requested):
 			hud.start_match_requested.connect(_on_start_match_requested)
 		if hud.has_signal("host_match_requested") and not hud.host_match_requested.is_connected(_on_host_match_requested):
@@ -57,6 +73,82 @@ func _ready() -> void:
 			hud.update_player_hp(player.current_health, player.max_health)
 			
 	print("[CAMPEONATO] Aguardando configuração inicial de partida pelo jogador.")
+
+func load_map(map_id: String) -> void:
+	if current_map_id == map_id and is_instance_valid(current_map_node):
+		return
+		
+	if not MAP_SCENES.has(map_id):
+		map_id = "river_village"
+		
+	if is_instance_valid(current_map_node):
+		current_map_node.queue_free()
+		current_map_node = null
+	else:
+		var existing_map = get_node_or_null("Map")
+		if existing_map:
+			existing_map.queue_free()
+			
+	var map_scene: PackedScene = MAP_SCENES[map_id]
+	current_map_node = map_scene.instantiate() as Node3D
+	current_map_node.name = "Map"
+	add_child(current_map_node)
+	move_child(current_map_node, 2)
+	
+	current_map_id = map_id
+	
+	var sun = get_node_or_null("DirectionalLight3D") as DirectionalLight3D
+	var env = get_node_or_null("WorldEnvironment") as WorldEnvironment
+	if map_id == "river_village":
+		if sun:
+			sun.light_color = Color(1.0, 0.96, 0.88)
+			sun.light_energy = 1.25
+			sun.shadow_enabled = true
+		if env and env.environment and env.environment.sky:
+			var sky_mat = env.environment.sky.sky_material as ProceduralSkyMaterial
+			if sky_mat:
+				sky_mat.sky_top_color = Color(0.35, 0.65, 0.95)
+				sky_mat.sky_horizon_color = Color(0.75, 0.85, 0.92)
+				sky_mat.ground_bottom_color = Color(0.20, 0.35, 0.18)
+	else:
+		if sun:
+			sun.light_color = Color(0.95, 0.98, 1.0)
+			sun.light_energy = 1.15
+			sun.shadow_enabled = true
+			
+	_update_bot_cover_points_for_map(map_id)
+	print("[MAPA] Mapa carregado: %s" % map_id)
+
+func _update_bot_cover_points_for_map(map_id: String) -> void:
+	if not bots_container:
+		return
+		
+	var new_points: Array[Vector3] = []
+	if map_id == "river_village":
+		new_points = [
+			Vector3(0, 1.5, 8), Vector3(0, 1.5, -8),
+			Vector3(-6, 1.5, 12), Vector3(6, 1.5, -12),
+			Vector3(-20, 1.5, 15), Vector3(18, 1.5, -16),
+			Vector3(-22, 1.5, -16), Vector3(-16, 1.5, 44),
+			Vector3(16, 1.5, -44), Vector3(42, 1.5, 18),
+			Vector3(36, 1.5, 8), Vector3(36, 1.5, -8),
+			Vector3(-36, 1.5, 0), Vector3(0, 1.5, 50),
+			Vector3(0, 1.5, -50)
+		]
+	else:
+		new_points = [
+			Vector3(-18, 1.5, 30), Vector3(18, 1.5, 30),
+			Vector3(-18, 1.5, -30), Vector3(18, 1.5, -30),
+			Vector3(-42, 1.5, 26), Vector3(-42, 1.5, -26),
+			Vector3(42, 1.5, 26), Vector3(42, 1.5, -26),
+			Vector3(0, 1.5, 50), Vector3(0, 1.5, -50),
+			Vector3(-16, 1.5, 52), Vector3(16, 1.5, 52),
+			Vector3(-16, 1.5, -52), Vector3(16, 1.5, -52)
+		]
+		
+	for bot in bots_container.get_children():
+		if "cover_points" in bot:
+			bot.cover_points = new_points
 
 func _physics_process(delta: float) -> void:
 	if not match_started or game_ended:
@@ -71,7 +163,8 @@ func _physics_process(delta: float) -> void:
 			_on_match_time_expired()
 
 ## Inicia a partida com os parâmetros escolhidos no painel de configuração
-func _on_start_match_requested(time_limit_sec: float, target_kills: int, difficulty: String = "normal") -> void:
+func _on_start_match_requested(time_limit_sec: float, target_kills: int, difficulty: String = "normal", map_id: String = "river_village") -> void:
+	load_map(map_id)
 	target_score = target_kills
 	match_duration = time_limit_sec
 	match_time_remaining = time_limit_sec
@@ -359,7 +452,7 @@ func _setup_network_manager() -> void:
 	network_manager.peer_joined.connect(_on_peer_joined)
 	network_manager.peer_left.connect(_on_peer_left)
 
-func _on_host_match_requested(port: int, use_upnp: bool, time_limit_sec: float, target_kills: int, difficulty: String) -> void:
+func _on_host_match_requested(port: int, use_upnp: bool, time_limit_sec: float, target_kills: int, difficulty: String, map_id: String = "river_village") -> void:
 	var result = network_manager.host_server(port, use_upnp, "Host (Você)", "blue")
 	if not result.get("success", false):
 		if hud:
@@ -369,7 +462,7 @@ func _on_host_match_requested(port: int, use_upnp: bool, time_limit_sec: float, 
 	if player:
 		player.setup_multiplayer(1, "Host (Você)", "blue", false)
 		
-	_on_start_match_requested(time_limit_sec, target_kills, difficulty)
+	_on_start_match_requested(time_limit_sec, target_kills, difficulty, map_id)
 	if hud:
 		hud.show_event_notification("👑 Servidor Local Aberto na porta %d! Aguardando amigos..." % port, Color(0.3, 1.0, 0.45))
 

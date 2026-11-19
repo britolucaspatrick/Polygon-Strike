@@ -1,8 +1,9 @@
 extends CanvasLayer
 
-signal start_match_requested(time_limit_sec: float, target_kills: int, difficulty: String)
-signal host_match_requested(port: int, use_upnp: bool, time_limit_sec: float, target_kills: int, difficulty: String)
+signal start_match_requested(time_limit_sec: float, target_kills: int, difficulty: String, map_id: String)
+signal host_match_requested(port: int, use_upnp: bool, time_limit_sec: float, target_kills: int, difficulty: String, map_id: String)
 signal join_match_requested(ip: String, port: int, player_name: String, player_team: String)
+signal map_selection_changed(map_id: String)
 
 ## Referências aos nós de interface
 @onready var blue_score_label: Label = $HUDControl/TopScoreBar/VBoxContainer/HBoxContainer/BlueScore
@@ -49,6 +50,7 @@ var player_ref: Node = null
 var selected_time_seconds: float = 300.0
 var selected_target_kills: int = 25
 var selected_difficulty: String = "normal"
+var selected_map: String = "river_village" # "river_village" ou "industrial"
 var current_game_mode: String = "single" # "single", "host", "join"
 var join_team: String = "red" # "blue" ou "red"
 var is_in_match_setup: bool = true
@@ -680,6 +682,16 @@ func _setup_config_panel_buttons() -> void:
 			btn.focus_mode = Control.FOCUS_NONE
 			btn.pressed.connect(_on_diff_button_pressed.bind(diff_buttons[btn_name], btn_name))
 			
+	var map_buttons = {
+		"BtnMapRiverVillage": "river_village",
+		"BtnMapIndustrial": "industrial"
+	}
+	for btn_name in map_buttons:
+		var btn = find_child(btn_name, true, false) as Button
+		if btn:
+			btn.focus_mode = Control.FOCUS_NONE
+			btn.pressed.connect(_on_map_button_pressed.bind(map_buttons[btn_name], btn_name))
+
 	var btn_start = find_child("BtnStartMatch", true, false) as Button
 	if btn_start and not btn_start.pressed.is_connected(_on_start_match_clicked):
 		btn_start.focus_mode = Control.FOCUS_NONE
@@ -706,6 +718,7 @@ func _setup_config_panel_buttons() -> void:
 	_apply_touch_mode()
 		
 	_highlight_selected_mode("BtnModeSingle")
+	_highlight_selected_map("BtnMapRiverVillage")
 	_set_join_team("red")
 	_highlight_selected_time("BtnTime5")
 	_highlight_selected_kills("BtnKills25")
@@ -860,6 +873,23 @@ func _highlight_selected_diff(active_name: String) -> void:
 			else:
 				btn.modulate = Color(0.7, 0.7, 0.7)
 
+func _on_map_button_pressed(map_id: String, btn_name: String) -> void:
+	selected_map = map_id
+	_highlight_selected_map(btn_name)
+	_update_setup_summary()
+	map_selection_changed.emit(map_id)
+	AudioManager.play("empty_click", 0.0, 1.2)
+
+func _highlight_selected_map(active_name: String) -> void:
+	var names = ["BtnMapRiverVillage", "BtnMapIndustrial"]
+	for n in names:
+		var btn = find_child(n, true, false) as Button
+		if btn:
+			if n == active_name:
+				btn.modulate = Color(0.3, 1.0, 0.6)
+			else:
+				btn.modulate = Color(0.7, 0.7, 0.7)
+
 func _update_setup_summary() -> void:
 	if not setup_summary_label:
 		setup_summary_label = find_child("SetupSummaryLabel", true, false) as Label
@@ -876,22 +906,27 @@ func _update_setup_summary() -> void:
 		elif current_game_mode == "join":
 			mode_desc = "🔗 Cliente (Conectar a Host)"
 			
-		setup_summary_label.text = "Modo: %s | Tempo: %s | Meta: %d Abates | IA: %s" % [
-			mode_desc, time_str, selected_target_kills, diff_names.get(selected_difficulty, "Soldado")
+		var map_names = {
+			"river_village": "Vila do Rio (Casas & Água)",
+			"industrial": "Arena Industrial"
+		}
+		var map_str: String = map_names.get(selected_map, "Vila do Rio")
+		setup_summary_label.text = "Modo: %s | Mapa: %s | Tempo: %s | Meta: %d Abates | IA: %s" % [
+			mode_desc, map_str, time_str, selected_target_kills, diff_names.get(selected_difficulty, "Soldado")
 		]
 
 func _on_start_match_clicked() -> void:
 	match current_game_mode:
 		"single":
 			close_match_setup()
-			start_match_requested.emit(selected_time_seconds, selected_target_kills, selected_difficulty)
+			start_match_requested.emit(selected_time_seconds, selected_target_kills, selected_difficulty, selected_map)
 		"host":
 			close_match_setup()
 			var use_upnp: bool = true
 			var upnp_check = find_child("HostUpnpCheck", true, false) as CheckBox
 			if upnp_check:
 				use_upnp = upnp_check.button_pressed
-			host_match_requested.emit(7777, use_upnp, selected_time_seconds, selected_target_kills, selected_difficulty)
+			host_match_requested.emit(7777, use_upnp, selected_time_seconds, selected_target_kills, selected_difficulty, selected_map)
 		"join":
 			var ip_edit = find_child("JoinIpEdit", true, false) as LineEdit
 			var port_edit = find_child("JoinPortEdit", true, false) as LineEdit

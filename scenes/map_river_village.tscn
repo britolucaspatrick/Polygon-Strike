@@ -1,0 +1,649 @@
+[gd_scene load_steps=18 format=3]
+
+[sub_resource type="StandardMaterial3D" id="Mat_Grass"]
+albedo_color = Color(0.24, 0.46, 0.20, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Mat_Path"]
+albedo_color = Color(0.48, 0.42, 0.34, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="Mat_RockCliff"]
+albedo_color = Color(0.35, 0.36, 0.32, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="Mat_Water"]
+transparency = 1
+albedo_color = Color(0.14, 0.52, 0.72, 0.85)
+metallic = 0.4
+roughness = 0.08
+
+[sub_resource type="StandardMaterial3D" id="Mat_RiverBed"]
+albedo_color = Color(0.20, 0.26, 0.22, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Mat_StoneBridge"]
+albedo_color = Color(0.50, 0.52, 0.52, 1)
+roughness = 0.7
+
+[sub_resource type="StandardMaterial3D" id="Mat_WoodPlanks"]
+albedo_color = Color(0.45, 0.32, 0.20, 1)
+roughness = 0.75
+
+[sub_resource type="StandardMaterial3D" id="Mat_HousePlaster"]
+albedo_color = Color(0.82, 0.78, 0.70, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="Mat_HouseWood"]
+albedo_color = Color(0.36, 0.24, 0.15, 1)
+roughness = 0.7
+
+[sub_resource type="StandardMaterial3D" id="Mat_TerracottaRoof"]
+albedo_color = Color(0.72, 0.28, 0.18, 1)
+roughness = 0.65
+
+[sub_resource type="StandardMaterial3D" id="Mat_DarkRoof"]
+albedo_color = Color(0.25, 0.26, 0.28, 1)
+roughness = 0.7
+
+[sub_resource type="StandardMaterial3D" id="Mat_TreeTrunk"]
+albedo_color = Color(0.32, 0.22, 0.14, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Mat_LeavesLight"]
+albedo_color = Color(0.28, 0.58, 0.22, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="Mat_LeavesDark"]
+albedo_color = Color(0.18, 0.42, 0.16, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="Mat_LeavesPine"]
+albedo_color = Color(0.14, 0.34, 0.20, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="Mat_FlowerBed"]
+albedo_color = Color(0.85, 0.30, 0.45, 1)
+roughness = 0.7
+
+[sub_resource type="StandardMaterial3D" id="Mat_BaseBlue"]
+albedo_color = Color(0.18, 0.42, 0.85, 1)
+roughness = 0.6
+
+[sub_resource type="StandardMaterial3D" id="Mat_BaseRed"]
+albedo_color = Color(0.85, 0.22, 0.22, 1)
+roughness = 0.6
+
+[node name="MapRiverVillage" type="Node3D"]
+
+[node name="Terrain" type="Node3D" parent="."]
+
+[node name="GrassSouth" type="CSGBox3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 41)
+use_collision = true
+size = Vector3(130, 1, 68)
+material = SubResource("Mat_Grass")
+
+[node name="GrassNorth" type="CSGBox3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, -41)
+use_collision = true
+size = Vector3(130, 1, 68)
+material = SubResource("Mat_Grass")
+
+[node name="PathCenterMain" type="CSGBox3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
+size = Vector3(8, 0.05, 130)
+material = SubResource("Mat_Path")
+
+[node name="PathEastFlank" type="CSGBox3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 36, 0.02, 0)
+size = Vector3(6, 0.05, 120)
+material = SubResource("Mat_Path")
+
+[node name="PathWestFlank" type="CSGBox3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -36, 0.02, 0)
+size = Vector3(6, 0.05, 120)
+material = SubResource("Mat_Path")
+
+[node name="CliffNorth" type="CSGBox3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, -75)
+use_collision = true
+size = Vector3(130, 12, 4)
+material = SubResource("Mat_RockCliff")
+
+[node name="CliffSouth" type="CSGBox3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 75)
+use_collision = true
+size = Vector3(130, 12, 4)
+material = SubResource("Mat_RockCliff")
+
+[node name="CliffEast" type="CSGBox3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65, 6, 0)
+use_collision = true
+size = Vector3(4, 12, 150)
+material = SubResource("Mat_RockCliff")
+
+[node name="CliffWest" type="CSGBox3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -65, 6, 0)
+use_collision = true
+size = Vector3(4, 12, 150)
+material = SubResource("Mat_RockCliff")
+
+[node name="River" type="Node3D" parent="."]
+
+[node name="RiverBed" type="CSGBox3D" parent="River"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.2, 0)
+use_collision = true
+size = Vector3(130, 0.8, 14)
+material = SubResource("Mat_RiverBed")
+
+[node name="RiverWater" type="CSGBox3D" parent="River"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.4, 0)
+size = Vector3(130, 0.6, 13.5)
+material = SubResource("Mat_Water")
+
+[node name="RiverBankSouth" type="CSGBox3D" parent="River"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.4, 7)
+use_collision = true
+size = Vector3(130, 0.8, 1)
+material = SubResource("Mat_Path")
+
+[node name="RiverBankNorth" type="CSGBox3D" parent="River"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.4, -7)
+use_collision = true
+size = Vector3(130, 0.8, 1)
+material = SubResource("Mat_Path")
+
+[node name="Bridges" type="Node3D" parent="."]
+
+[node name="StoneBridgeCenter" type="CSGBox3D" parent="Bridges"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+use_collision = true
+size = Vector3(8, 0.6, 16)
+material = SubResource("Mat_StoneBridge")
+
+[node name="BridgeRailWest" type="CSGBox3D" parent="Bridges/StoneBridgeCenter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.1, 0.7, 0)
+use_collision = true
+size = Vector3(0.5, 1.1, 16)
+material = SubResource("Mat_StoneBridge")
+
+[node name="BridgeRailEast" type="CSGBox3D" parent="Bridges/StoneBridgeCenter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.1, 0.7, 0)
+use_collision = true
+size = Vector3(0.5, 1.1, 16)
+material = SubResource("Mat_StoneBridge")
+
+[node name="WoodBridgeEast" type="CSGBox3D" parent="Bridges"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 36, 0.1, 0)
+use_collision = true
+size = Vector3(6, 0.4, 16)
+material = SubResource("Mat_WoodPlanks")
+
+[node name="WoodRailWest" type="CSGBox3D" parent="Bridges/WoodBridgeEast"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1, 0.6, 0)
+use_collision = true
+size = Vector3(0.3, 0.9, 16)
+material = SubResource("Mat_HouseWood")
+
+[node name="WoodRailEast" type="CSGBox3D" parent="Bridges/WoodBridgeEast"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1, 0.6, 0)
+use_collision = true
+size = Vector3(0.3, 0.9, 16)
+material = SubResource("Mat_HouseWood")
+
+[node name="IslandWest" type="CSGBox3D" parent="Bridges"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -36, -0.1, 0)
+use_collision = true
+size = Vector3(14, 0.7, 10)
+material = SubResource("Mat_Grass")
+
+[node name="SteppingStone1" type="CSGBox3D" parent="Bridges"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -36, 0.05, 6)
+use_collision = true
+size = Vector3(5, 0.5, 3)
+material = SubResource("Mat_StoneBridge")
+
+[node name="SteppingStone2" type="CSGBox3D" parent="Bridges"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -36, 0.05, -6)
+use_collision = true
+size = Vector3(5, 0.5, 3)
+material = SubResource("Mat_StoneBridge")
+
+[node name="IslandRock1" type="CSGBox3D" parent="Bridges"]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -38, 1.0, 1)
+use_collision = true
+size = Vector3(3, 2.2, 3)
+material = SubResource("Mat_RockCliff")
+
+[node name="Houses" type="Node3D" parent="."]
+
+[node name="House1_WaterMill" type="Node3D" parent="Houses"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0, 15)
+
+[node name="Body" type="CSGBox3D" parent="Houses/House1_WaterMill"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+use_collision = true
+size = Vector3(10, 5, 8)
+material = SubResource("Mat_HousePlaster")
+
+[node name="DoorCutout" type="CSGBox3D" parent="Houses/House1_WaterMill"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, -4)
+size = Vector3(2.4, 2.6, 1.2)
+material = SubResource("Mat_HouseWood")
+
+[node name="Roof" type="CSGBox3D" parent="Houses/House1_WaterMill"]
+transform = Transform3D(0.965926, -0.258819, 0, 0.258819, 0.965926, 0, 0, 0, 1, 0, 5.8, 0)
+use_collision = true
+size = Vector3(8.5, 1.2, 9)
+material = SubResource("Mat_TerracottaRoof")
+
+[node name="WaterWheel" type="CSGCylinder3D" parent="Houses/House1_WaterMill"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -5.6, 1.2, 0)
+use_collision = true
+radius = 2.4
+height = 0.8
+sides = 12
+material = SubResource("Mat_HouseWood")
+
+[node name="House2_Inn" type="Node3D" parent="Houses"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 0, -16)
+
+[node name="Body" type="CSGBox3D" parent="Houses/House2_Inn"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, 0)
+use_collision = true
+size = Vector3(12, 6.4, 9)
+material = SubResource("Mat_HousePlaster")
+
+[node name="DoorFront" type="CSGBox3D" parent="Houses/House2_Inn"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 4.5)
+size = Vector3(2.5, 2.8, 0.8)
+material = SubResource("Mat_HouseWood")
+
+[node name="RoofMain" type="CSGBox3D" parent="Houses/House2_Inn"]
+transform = Transform3D(0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 0, 0, 1, 0, 7.2, 0)
+use_collision = true
+size = Vector3(10.5, 1.4, 10.2)
+material = SubResource("Mat_TerracottaRoof")
+
+[node name="Balcony" type="CSGBox3D" parent="Houses/House2_Inn"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, 5.5)
+use_collision = true
+size = Vector3(8, 0.4, 2.5)
+material = SubResource("Mat_WoodPlanks")
+
+[node name="BalconyRail" type="CSGBox3D" parent="Houses/House2_Inn"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.0, 6.7)
+use_collision = true
+size = Vector3(8, 1.1, 0.25)
+material = SubResource("Mat_HouseWood")
+
+[node name="Chimney" type="CSGBox3D" parent="Houses/House2_Inn"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 7.8, -2)
+use_collision = true
+size = Vector3(1.6, 2.8, 1.6)
+material = SubResource("Mat_StoneBridge")
+
+[node name="House3_Fisherman" type="Node3D" parent="Houses"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, -16)
+
+[node name="Body" type="CSGBox3D" parent="Houses/House3_Fisherman"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 0)
+use_collision = true
+size = Vector3(8, 4.4, 7)
+material = SubResource("Mat_HouseWood")
+
+[node name="Roof" type="CSGBox3D" parent="Houses/House3_Fisherman"]
+transform = Transform3D(1, 0, 0, 0, 0.965926, -0.258819, 0, 0.258819, 0.965926, 0, 5.0, 0)
+use_collision = true
+size = Vector3(9, 1.2, 7.5)
+material = SubResource("Mat_DarkRoof")
+
+[node name="House4_BlueBarn" type="Node3D" parent="Houses"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, 44)
+
+[node name="Body" type="CSGBox3D" parent="Houses/House4_BlueBarn"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8, 0)
+use_collision = true
+size = Vector3(11, 5.6, 9)
+material = SubResource("Mat_HouseWood")
+
+[node name="Roof" type="CSGBox3D" parent="Houses/House4_BlueBarn"]
+transform = Transform3D(0.965926, -0.258819, 0, 0.258819, 0.965926, 0, 0, 0, 1, 0, 6.4, 0)
+use_collision = true
+size = Vector3(9.5, 1.3, 10)
+material = SubResource("Mat_TerracottaRoof")
+
+[node name="House5_RedOutpost" type="Node3D" parent="Houses"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, -44)
+
+[node name="Body" type="CSGBox3D" parent="Houses/House5_RedOutpost"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8, 0)
+use_collision = true
+size = Vector3(11, 5.6, 9)
+material = SubResource("Mat_HousePlaster")
+
+[node name="Roof" type="CSGBox3D" parent="Houses/House5_RedOutpost"]
+transform = Transform3D(0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 0, 0, 1, 0, 6.4, 0)
+use_collision = true
+size = Vector3(9.5, 1.3, 10)
+material = SubResource("Mat_DarkRoof")
+
+[node name="House6_EastLodge" type="Node3D" parent="Houses"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42, 0, 18)
+
+[node name="Body" type="CSGBox3D" parent="Houses/House6_EastLodge"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 0)
+use_collision = true
+size = Vector3(9, 4.8, 8)
+material = SubResource("Mat_HousePlaster")
+
+[node name="Roof" type="CSGBox3D" parent="Houses/House6_EastLodge"]
+transform = Transform3D(0.965926, -0.258819, 0, 0.258819, 0.965926, 0, 0, 0, 1, 0, 5.4, 0)
+use_collision = true
+size = Vector3(7.8, 1.2, 9)
+material = SubResource("Mat_TerracottaRoof")
+
+[node name="Vegetation" type="Node3D" parent="."]
+
+[node name="Tree1" type="Node3D" parent="Vegetation"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 18)
+
+[node name="Trunk" type="CSGCylinder3D" parent="Vegetation/Tree1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 0)
+use_collision = true
+radius = 0.45
+height = 4.4
+material = SubResource("Mat_TreeTrunk")
+
+[node name="Foliage1" type="CSGSphere3D" parent="Vegetation/Tree1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.8, 0)
+radius = 2.4
+radial_segments = 10
+rings = 6
+material = SubResource("Mat_LeavesLight")
+
+[node name="Foliage2" type="CSGSphere3D" parent="Vegetation/Tree1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 6.2, -0.3)
+radius = 1.7
+radial_segments = 10
+rings = 6
+material = SubResource("Mat_LeavesDark")
+
+[node name="Tree2" type="Node3D" parent="Vegetation"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -18)
+
+[node name="Trunk" type="CSGCylinder3D" parent="Vegetation/Tree2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 0)
+use_collision = true
+radius = 0.45
+height = 4.4
+material = SubResource("Mat_TreeTrunk")
+
+[node name="Foliage1" type="CSGSphere3D" parent="Vegetation/Tree2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.8, 0)
+radius = 2.5
+radial_segments = 10
+rings = 6
+material = SubResource("Mat_LeavesDark")
+
+[node name="Tree3" type="Node3D" parent="Vegetation"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26, 0, -6)
+
+[node name="Trunk" type="CSGCylinder3D" parent="Vegetation/Tree3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+use_collision = true
+radius = 0.5
+height = 5.0
+material = SubResource("Mat_TreeTrunk")
+
+[node name="Foliage" type="CSGSphere3D" parent="Vegetation/Tree3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.2, 0)
+radius = 3.0
+radial_segments = 10
+rings = 6
+material = SubResource("Mat_LeavesLight")
+
+[node name="Tree4_Pine1" type="Node3D" parent="Vegetation"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26, 0, 6)
+
+[node name="Trunk" type="CSGCylinder3D" parent="Vegetation/Tree4_Pine1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+use_collision = true
+radius = 0.35
+height = 4.0
+material = SubResource("Mat_TreeTrunk")
+
+[node name="PineCone1" type="CSGCylinder3D" parent="Vegetation/Tree4_Pine1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.8, 0)
+radius = 2.2
+height = 2.6
+cone = true
+material = SubResource("Mat_LeavesPine")
+
+[node name="PineCone2" type="CSGCylinder3D" parent="Vegetation/Tree4_Pine1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.5, 0)
+radius = 1.6
+height = 2.2
+cone = true
+material = SubResource("Mat_LeavesPine")
+
+[node name="Tree5_Pine2" type="Node3D" parent="Vegetation"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48, 0, 22)
+
+[node name="Trunk" type="CSGCylinder3D" parent="Vegetation/Tree5_Pine2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 0)
+use_collision = true
+radius = 0.4
+height = 4.4
+material = SubResource("Mat_TreeTrunk")
+
+[node name="PineCone" type="CSGCylinder3D" parent="Vegetation/Tree5_Pine2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.6, 0)
+radius = 2.4
+height = 3.6
+cone = true
+material = SubResource("Mat_LeavesPine")
+
+[node name="Tree6_Pine3" type="Node3D" parent="Vegetation"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 48, 0, -24)
+
+[node name="Trunk" type="CSGCylinder3D" parent="Vegetation/Tree6_Pine3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 0)
+use_collision = true
+radius = 0.4
+height = 4.4
+material = SubResource("Mat_TreeTrunk")
+
+[node name="PineCone" type="CSGCylinder3D" parent="Vegetation/Tree6_Pine3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.6, 0)
+radius = 2.4
+height = 3.6
+cone = true
+material = SubResource("Mat_LeavesPine")
+
+[node name="Tree7_IslandWillow" type="Node3D" parent="Vegetation"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -34, 0, -1)
+
+[node name="Trunk" type="CSGCylinder3D" parent="Vegetation/Tree7_IslandWillow"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
+use_collision = true
+radius = 0.5
+height = 3.6
+material = SubResource("Mat_TreeTrunk")
+
+[node name="Foliage" type="CSGSphere3D" parent="Vegetation/Tree7_IslandWillow"]
+transform = Transform3D(1.2, 0, 0, 0, 0.8, 0, 0, 0, 1.2, 0, 3.8, 0)
+radius = 2.8
+radial_segments = 10
+rings = 6
+material = SubResource("Mat_LeavesLight")
+
+[node name="Tree8_South1" type="Node3D" parent="Vegetation"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, 36)
+
+[node name="Trunk" type="CSGCylinder3D" parent="Vegetation/Tree8_South1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+use_collision = true
+radius = 0.4
+height = 4.0
+material = SubResource("Mat_TreeTrunk")
+
+[node name="Foliage" type="CSGSphere3D" parent="Vegetation/Tree8_South1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.4, 0)
+radius = 2.4
+radial_segments = 10
+rings = 6
+material = SubResource("Mat_LeavesDark")
+
+[node name="Tree9_North1" type="Node3D" parent="Vegetation"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0, -36)
+
+[node name="Trunk" type="CSGCylinder3D" parent="Vegetation/Tree9_North1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+use_collision = true
+radius = 0.4
+height = 4.0
+material = SubResource("Mat_TreeTrunk")
+
+[node name="Foliage" type="CSGSphere3D" parent="Vegetation/Tree9_North1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.4, 0)
+radius = 2.4
+radial_segments = 10
+rings = 6
+material = SubResource("Mat_LeavesLight")
+
+[node name="Bush1" type="CSGSphere3D" parent="Vegetation"]
+transform = Transform3D(1.4, 0, 0, 0, 0.9, 0, 0, 0, 1.2, 5, 0.7, 8)
+use_collision = true
+radius = 1.3
+radial_segments = 8
+rings = 5
+material = SubResource("Mat_LeavesLight")
+
+[node name="Bush2" type="CSGSphere3D" parent="Vegetation"]
+transform = Transform3D(1.3, 0, 0, 0, 0.8, 0, 0, 0, 1.4, -5, 0.7, -8)
+use_collision = true
+radius = 1.2
+radial_segments = 8
+rings = 5
+material = SubResource("Mat_LeavesDark")
+
+[node name="Bush3" type="CSGSphere3D" parent="Vegetation"]
+transform = Transform3D(1.2, 0, 0, 0, 0.8, 0, 0, 0, 1.2, 28, 0.7, 9)
+use_collision = true
+radius = 1.2
+radial_segments = 8
+rings = 5
+material = SubResource("Mat_LeavesDark")
+
+[node name="Bush4" type="CSGSphere3D" parent="Vegetation"]
+transform = Transform3D(1.2, 0, 0, 0, 0.8, 0, 0, 0, 1.2, -28, 0.7, 9)
+use_collision = true
+radius = 1.2
+radial_segments = 8
+rings = 5
+material = SubResource("Mat_LeavesLight")
+
+[node name="Bush5" type="CSGSphere3D" parent="Vegetation"]
+transform = Transform3D(1.2, 0, 0, 0, 0.8, 0, 0, 0, 1.2, 28, 0.7, -9)
+use_collision = true
+radius = 1.2
+radial_segments = 8
+rings = 5
+material = SubResource("Mat_LeavesLight")
+
+[node name="Bush6" type="CSGSphere3D" parent="Vegetation"]
+transform = Transform3D(1.2, 0, 0, 0, 0.8, 0, 0, 0, 1.2, -45, 0.7, -4)
+use_collision = true
+radius = 1.3
+radial_segments = 8
+rings = 5
+material = SubResource("Mat_LeavesDark")
+
+[node name="Bush7" type="CSGSphere3D" parent="Vegetation"]
+transform = Transform3D(1.2, 0, 0, 0, 0.8, 0, 0, 0, 1.2, 45, 0.7, 4)
+use_collision = true
+radius = 1.3
+radial_segments = 8
+rings = 5
+material = SubResource("Mat_LeavesLight")
+
+[node name="FlowerBed1" type="CSGBox3D" parent="Vegetation"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0.2, 18)
+size = Vector3(4, 0.35, 1.5)
+material = SubResource("Mat_FlowerBed")
+
+[node name="FlowerBed2" type="CSGBox3D" parent="Vegetation"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 0.2, -21)
+size = Vector3(4, 0.35, 1.5)
+material = SubResource("Mat_FlowerBed")
+
+[node name="FlowerBed3" type="CSGBox3D" parent="Vegetation"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 0.2, 44)
+size = Vector3(3, 0.35, 1.5)
+material = SubResource("Mat_FlowerBed")
+
+[node name="VillageProps" type="Node3D" parent="."]
+
+[node name="CratesCenterSouth" type="CSGBox3D" parent="VillageProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1.2, 12)
+use_collision = true
+size = Vector3(3.2, 2.4, 3.2)
+material = SubResource("Mat_WoodPlanks")
+
+[node name="CratesCenterNorth" type="CSGBox3D" parent="VillageProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.2, -12)
+use_collision = true
+size = Vector3(3.2, 2.4, 3.2)
+material = SubResource("Mat_WoodPlanks")
+
+[node name="HayCartSouth" type="CSGBox3D" parent="VillageProps"]
+transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, 18, 1.4, 28)
+use_collision = true
+size = Vector3(5, 2.6, 3)
+material = SubResource("Mat_Path")
+
+[node name="HayCartNorth" type="CSGBox3D" parent="VillageProps"]
+transform = Transform3D(0.965926, 0, -0.258819, 0, 1, 0, 0.258819, 0, 0.965926, -18, 1.4, -28)
+use_collision = true
+size = Vector3(5, 2.6, 3)
+material = SubResource("Mat_Path")
+
+[node name="FenceSouth1" type="CSGBox3D" parent="VillageProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0.6, 7.8)
+use_collision = true
+size = Vector3(14, 1.2, 0.3)
+material = SubResource("Mat_HouseWood")
+
+[node name="FenceNorth1" type="CSGBox3D" parent="VillageProps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0.6, -7.8)
+use_collision = true
+size = Vector3(14, 1.2, 0.3)
+material = SubResource("Mat_HouseWood")
+
+[node name="Bases" type="Node3D" parent="."]
+
+[node name="BaseFloorBlue" type="CSGBox3D" parent="Bases"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 62)
+size = Vector3(54, 0.1, 24)
+material = SubResource("Mat_BaseBlue")
+
+[node name="BaseFloorRed" type="CSGBox3D" parent="Bases"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -62)
+size = Vector3(54, 0.1, 24)
+material = SubResource("Mat_BaseRed")
+
+[node name="BlueBaseFountain" type="CSGCylinder3D" parent="Bases"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 50)
+use_collision = true
+radius = 3.2
+height = 2.0
+sides = 12
+material = SubResource("Mat_StoneBridge")
+
+[node name="RedBaseMonument" type="CSGBox3D" parent="Bases"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -50)
+use_collision = true
+size = Vector3(5, 3.0, 5)
+material = SubResource("Mat_StoneBridge")

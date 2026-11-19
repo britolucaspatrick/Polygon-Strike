@@ -826,6 +826,33 @@ size_flags_horizontal = 3
 custom_minimum_size = Vector2(0, 38)
 text = "🔗 Entrar com IP (Join)"
 
+[node name="MapTitle" type="Label" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.95, 0.6, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 15
+text = "🏞️ SELEÇÃO DE MAPA / CENÁRIO"
+
+[node name="MapHBox" type="HBoxContainer" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="BtnMapRiverVillage" type="Button" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/MapHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 42)
+text = "🏞️ Vila do Rio (Casas, Rio & Natureza)"
+
+[node name="BtnMapIndustrial" type="Button" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer/MapHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 42)
+text = "🏟️ Arena Industrial (Mapa Original)"
+
 [node name="TimeTitle" type="Label" parent="HUDControl/MatchSetupPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.4, 0.8, 1, 1)
