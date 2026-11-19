@@ -188,6 +188,11 @@ O jogo conta com uma engine de áudio em tempo real (`AudioManager`) que sinteti
   - `🛒 LOJA`: Abre/fecha o menu de compras da base com toque.
   - `📊 TAB`: Abre/fecha a tabela de pontuação com toque.
 - **Detecção Automática & Teste no PC:** O jogo detecta automaticamente se está rodando no Android ou tela touch. No PC, você também pode ativar os controles touch na tela pelo botão no menu inicial para testar com o mouse!
+- **🎨 Editor de Layout Personalizado (HUD Customizável):**
+  - No menu de configuração de partida, toque em **`🎨 Customizar Botões na Tela (Posição & Tamanho)`**.
+  - **Arraste e Solte:** Toque em qualquer botão ou no joystick virtual e arraste para a posição que for mais confortável para seus dedos na tela.
+  - **Ajuste de Escala/Tamanho Individual:** Selecione qualquer botão e use os controles **`➕ Maior`** ou **`➖ Menor`** na barra superior (escala de 60% a 220%).
+  - **Salvar & Restaurar:** Clique em **`💾 Salvar e Voltar`** para salvar suas preferências permanentemente (`user://touch_layout.json`) ou **`🔄 Padrão`** para restaurar a disposição original. As posições são gravadas em proporção de tela, adaptando-se a qualquer modelo de celular.
 
 ---
 

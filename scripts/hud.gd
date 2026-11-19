@@ -690,6 +690,11 @@ func _setup_config_panel_buttons() -> void:
 		btn_touch.focus_mode = Control.FOCUS_NONE
 		btn_touch.pressed.connect(_on_toggle_touch_clicked)
 		_apply_touch_mode()
+
+	var btn_custom_hud = find_child("BtnCustomizeTouchLayout", true, false) as Button
+	if btn_custom_hud and not btn_custom_hud.pressed.is_connected(_on_customize_touch_layout_clicked):
+		btn_custom_hud.focus_mode = Control.FOCUS_NONE
+		btn_custom_hud.pressed.connect(_on_customize_touch_layout_clicked)
 		
 	_highlight_selected_mode("BtnModeSingle")
 	_set_join_team("red")
@@ -731,6 +736,19 @@ func _apply_touch_mode() -> void:
 	if btn_touch:
 		btn_touch.text = "📱 Controles Touch na Tela: %s" % status_text
 		btn_touch.modulate = Color(0.3, 1.0, 0.5) if enable_touch else Color(0.8, 0.8, 0.8)
+
+func _on_customize_touch_layout_clicked() -> void:
+	if match_setup_panel:
+		match_setup_panel.visible = false
+	var touch_node = find_child("TouchControls", true, false) as Control
+	if touch_node and touch_node.has_method("start_layout_editor"):
+		if not touch_node.editor_closed.is_connected(_on_touch_editor_closed):
+			touch_node.editor_closed.connect(_on_touch_editor_closed)
+		touch_node.start_layout_editor()
+
+func _on_touch_editor_closed() -> void:
+	if match_setup_panel:
+		match_setup_panel.visible = true
 
 func _on_mode_button_pressed(mode: String, btn_name: String) -> void:
 	current_game_mode = mode
